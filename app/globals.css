@@ -991,7 +991,7 @@ button.metric.toggle {
 .status-rail {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin: 0 0 12px;
   padding: 0;
@@ -1000,9 +1000,9 @@ button.metric.toggle {
 .status-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 6px 8px;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 10px;
   border-radius: 12px;
   background: #18181b;
   border: 1px solid color-mix(in srgb, var(--tone) 55%, #000);
@@ -1019,8 +1019,12 @@ button.metric.toggle {
 }
 
 .status-chip span {
-  display: grid;
-  font-size: 9px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 1;
+  font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-family: var(--font-mono), "IBM Plex Mono", monospace;
