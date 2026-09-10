@@ -19,6 +19,7 @@ export const CREW: CrewMember[] = [
     weeklyHoursLogged: 4.5,
     lat: 47.62482,
     lng: -122.3629,
+    gpsLive: true,
   },
   {
     id: "e-dana",
@@ -34,6 +35,7 @@ export const CREW: CrewMember[] = [
     weeklyHoursLogged: 8,
     lat: 47.62572,
     lng: -122.3089,
+    gpsLive: true,
   },
   {
     id: "e-sam",
@@ -49,6 +51,7 @@ export const CREW: CrewMember[] = [
     weeklyHoursLogged: 0,
     lat: null,
     lng: null,
+    gpsLive: false,
   },
   {
     id: "e-liv",
@@ -64,6 +67,7 @@ export const CREW: CrewMember[] = [
     weeklyHoursLogged: 3.5,
     lat: 47.62435,
     lng: -122.3641,
+    gpsLive: true,
   },
 ];
 
@@ -76,8 +80,8 @@ export const JOBS: Job[] = [
     jobTitle: "Exterior paint · Queen Anne",
     status: "in_progress",
     scheduledTime: "08:30 AM",
-    worker: "Mike Reyes",
-    workerId: "e-mike",
+    worker: "Unassigned",
+    workerId: null,
     priority: "high",
     lat: 47.639844278404,
     lng: -122.368877694281,

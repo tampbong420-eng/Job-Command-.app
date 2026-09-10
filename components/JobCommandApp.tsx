@@ -4,7 +4,13 @@ import CrewMetrics from "@/components/CrewMetrics";
 import CrewRolodex from "@/components/CrewRolodex";
 import EmployeeHome from "@/components/EmployeeHome";
 import JobTumbler from "@/components/JobTumbler";
-import { lockJobToCrew, activeJobs, toggleCrewClock } from "@/lib/assign";
+import {
+  lockJobToCrew,
+  activeJobs,
+  tumblerIndexForCrew,
+  toggleCrewClock,
+  toggleCrewGps,
+} from "@/lib/assign";
 import { CREW, JOBS } from "@/lib/demo-data";
 import type { CrewMember, Job, NavTab, Role } from "@/lib/types";
 import { useLiveDate } from "@/lib/use-live-time";
@@ -23,7 +29,9 @@ export default function JobCommandApp() {
   const [crew, setCrew] = useState<CrewMember[]>(CREW);
   const [jobs, setJobs] = useState<Job[]>(JOBS);
   const [crewIndex, setCrewIndex] = useState(0);
-  const [jobIndex, setJobIndex] = useState(0);
+  const [jobIndex, setJobIndex] = useState(() =>
+    tumblerIndexForCrew(JOBS, CREW[0].id, CREW[0].currentJobId),
+  );
   const [ticking, setTicking] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const fieldDate = useLiveDate();
@@ -31,8 +39,6 @@ export default function JobCommandApp() {
   const member = crew[crewIndex] ?? crew[0];
   const stack = useMemo(() => activeJobs(jobs), [jobs]);
   const selectedJob = stack[jobIndex] ?? null;
-  const assignedJob =
-    jobs.find((job) => job.id === member?.currentJobId) ?? selectedJob;
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -42,6 +48,7 @@ export default function JobCommandApp() {
 
   function lockCurrentJob() {
     if (!member || !selectedJob) return;
+    if (selectedJob.workerId === member.id) return;
     const result = lockJobToCrew(jobs, crew, selectedJob.id, member.id);
     if (!result.locked) {
       setNotice("Completed jobs stay closed.");
@@ -54,9 +61,23 @@ export default function JobCommandApp() {
     setNotice(`Locked ${selectedJob.jobTitle} to ${member.name}.`);
   }
 
+  function selectCrew(nextIndex: number) {
+    setCrewIndex(nextIndex);
+    const nextMember = crew[nextIndex];
+    if (!nextMember) return;
+    setJobIndex(
+      tumblerIndexForCrew(jobs, nextMember.id, nextMember.currentJobId),
+    );
+  }
+
   function toggleClock() {
     if (!member) return;
     setCrew((current) => toggleCrewClock(current, member.id));
+  }
+
+  function toggleGps() {
+    if (!member) return;
+    setCrew((current) => toggleCrewGps(current, member.id));
   }
 
   return (
@@ -122,7 +143,7 @@ export default function JobCommandApp() {
           <CrewRolodex
             crew={crew}
             index={crewIndex}
-            onIndexChange={setCrewIndex}
+            onIndexChange={selectCrew}
           />
           <JobTumbler
             jobs={jobs}
@@ -134,8 +155,9 @@ export default function JobCommandApp() {
           />
           <CrewMetrics
             member={member}
-            job={assignedJob}
+            job={selectedJob}
             onToggleClock={toggleClock}
+            onToggleGps={toggleGps}
           />
         </section>
       )}

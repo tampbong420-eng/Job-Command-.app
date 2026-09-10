@@ -1,7 +1,7 @@
 "use client";
 
 import { etaFromMiles, formatMiles, milesBetween } from "@/lib/geo";
-import { clockLabel, formatLiveHours } from "@/lib/format";
+import { formatLiveHours } from "@/lib/format";
 import type { CrewMember, Job } from "@/lib/types";
 import { useLiveNow } from "@/lib/use-live-time";
 
@@ -9,13 +9,17 @@ export default function CrewMetrics({
   member,
   job,
   onToggleClock,
+  onToggleGps,
 }: {
   member: CrewMember;
   job: Job | null;
   onToggleClock: () => void;
+  onToggleGps: () => void;
 }) {
   const now = useLiveNow();
+  const tracking = member.gpsLive;
   const miles =
+    tracking &&
     member.lat != null &&
     member.lng != null &&
     job?.lat != null &&
@@ -46,17 +50,23 @@ export default function CrewMetrics({
         aria-pressed={onDuty}
       >
         <p className="metric-label">Clock</p>
-        <b>{clockLabel(member.status)}</b>
+        <b>{onDuty ? "LIVE" : "OFF"}</b>
         <span className="toggle-hint">{onDuty ? "Tap off" : "Tap on"}</span>
       </button>
-      <div className={`metric distance ${onDuty ? "on" : "off"}`}>
+      <button
+        type="button"
+        className={`metric distance toggle ${tracking ? "on" : "off"}`}
+        onClick={onToggleGps}
+        aria-pressed={tracking}
+      >
         <p className="metric-label">Distance</p>
         <b>
-          {!onDuty
+          {!tracking
             ? "GPS off"
             : `${formatMiles(miles)}${miles != null ? ` · ${etaFromMiles(miles)}` : ""}`}
         </b>
-      </div>
+        <span className="toggle-hint">{tracking ? "Tap mute" : "Tap live"}</span>
+      </button>
     </section>
   );
 }

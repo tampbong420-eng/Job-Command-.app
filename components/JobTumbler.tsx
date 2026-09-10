@@ -73,7 +73,7 @@ export default function JobTumbler({
                 key={`${job.id}-${offset}`}
                 className={`tumbler-slot${offset === 0 ? " is-center" : ""}${
                   offset === 0 && ticking ? " is-ticking" : ""
-                }`}
+                }${swipe.dragging ? " is-dragging" : ""}`}
                 style={{
                   transform: `translateY(${y}px)`,
                   opacity: abs === 0 ? 1 : abs === 1 ? 0.5 : 0.18,

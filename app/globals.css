@@ -620,6 +620,11 @@ h1 strong {
   font-size: 10px;
 }
 
+.rolodex-strip .swipe-hint {
+  text-align: center;
+  margin: 10px 0 0;
+}
+
 .tumbler-shell {
   margin-bottom: 14px;
   padding: 14px 14px 16px;
@@ -745,6 +750,10 @@ h1 strong {
 
 .tumbler-slot.is-ticking {
   animation: tick 0.32s ease;
+}
+
+.tumbler-slot.is-dragging {
+  transition: none;
 }
 
 .slot-copy {

@@ -53,6 +53,7 @@ export default function CrewRolodex({
           {clockLabel(member.status)}
         </span>
       </div>
+      <p className="swipe-hint">Swipe crew</p>
       <div className="rolodex-dots">
         {crew.map((row, i) => (
           <button

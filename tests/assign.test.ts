@@ -1,6 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { lockJobToCrew, activeJobs, toggleCrewClock } from "../lib/assign";
+import {
+  lockJobToCrew,
+  activeJobs,
+  tumblerIndexForCrew,
+  toggleCrewClock,
+  toggleCrewGps,
+} from "../lib/assign";
 import type { CrewMember, Job } from "../lib/types";
 
 const crew: CrewMember[] = [
@@ -18,6 +24,7 @@ const crew: CrewMember[] = [
     weeklyHoursLogged: 4.5,
     lat: 47.62,
     lng: -122.36,
+    gpsLive: true,
   },
   {
     id: "e-dana",
@@ -33,6 +40,7 @@ const crew: CrewMember[] = [
     weeklyHoursLogged: 8,
     lat: 47.62,
     lng: -122.3,
+    gpsLive: true,
   },
 ];
 
@@ -129,9 +137,52 @@ test("activeJobs drops completed work from the tumbler", () => {
   );
 });
 
+test("lockJobToCrew releases the crew member from other active jobs", () => {
+  const withTwo: Job[] = [
+    ...jobs,
+    {
+      ...jobs[0],
+      id: "c-extra",
+      jobTitle: "Second stop",
+      worker: "Mike Reyes",
+      workerId: "e-mike",
+    },
+  ];
+  const result = lockJobToCrew(withTwo, crew, "c-shah", "e-mike");
+  assert.equal(
+    result.jobs.find((job) => job.id === "c-northline")?.workerId,
+    null,
+  );
+  assert.equal(result.jobs.find((job) => job.id === "c-extra")?.workerId, null);
+  assert.equal(result.jobs.find((job) => job.id === "c-shah")?.workerId, "e-mike");
+});
+
+test("tumblerIndexForCrew snaps to the crew member's locked job", () => {
+  assert.equal(tumblerIndexForCrew(jobs, "e-mike", "c-northline"), 0);
+  assert.equal(tumblerIndexForCrew(jobs, "e-dana", "c-hale"), 1);
+  assert.equal(tumblerIndexForCrew(jobs, "e-sam", null), 0);
+});
+
 test("toggleCrewClock flips duty without dropping the roster", () => {
   const off = toggleCrewClock(crew, "e-mike");
   assert.equal(off.find((row) => row.id === "e-mike")?.status, "off");
+  assert.equal(off.find((row) => row.id === "e-mike")?.gpsLive, false);
   const on = toggleCrewClock(off, "e-mike", "2026-09-10T18:00:00.000Z");
   assert.equal(on.find((row) => row.id === "e-mike")?.status, "active");
+  assert.equal(on.find((row) => row.id === "e-mike")?.gpsLive, true);
+});
+
+test("toggleCrewClock clocks a break shift off", () => {
+  const onBreak = crew.map((row) =>
+    row.id === "e-mike" ? { ...row, status: "break" as const } : row,
+  );
+  const off = toggleCrewClock(onBreak, "e-mike");
+  assert.equal(off.find((row) => row.id === "e-mike")?.status, "off");
+});
+
+test("toggleCrewGps mutes location tracking for the selected crew", () => {
+  const muted = toggleCrewGps(crew, "e-mike");
+  assert.equal(muted.find((row) => row.id === "e-mike")?.gpsLive, false);
+  const live = toggleCrewGps(muted, "e-mike");
+  assert.equal(live.find((row) => row.id === "e-mike")?.gpsLive, true);
 });

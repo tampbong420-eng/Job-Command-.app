@@ -18,6 +18,7 @@ export type CrewMember = {
   weeklyHoursLogged: number;
   lat: number | null;
   lng: number | null;
+  gpsLive: boolean;
 };
 
 export type Job = {
