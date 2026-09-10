@@ -280,26 +280,31 @@ export default function JobCommandMasterApp({
     };
   }, []);
 
-  useEffect(() => {
-    if (role === "employee" && activeView === "boss-links") {
-      setActiveView("home");
-    }
-  }, [role, activeView]);
-
   const loadPortalEmployees = useCallback(async () => {
     const res = await fetch("/api/employees");
     const data = await res.json();
     setPortalEmployees(data.employees ?? []);
   }, []);
 
+  const switchRole = (next: Role) => {
+    setRole(next);
+    if (next === "employee") {
+      setActiveView((view) => (view === "boss-links" ? "home" : view));
+    }
+    if (next === "boss") {
+      void loadPortalEmployees();
+    }
+  };
+
   useEffect(() => {
-    if (role !== "boss" || lockRole) return undefined;
-    void loadPortalEmployees();
+    if (role !== "boss" || lockRole || activeView !== "boss-links") {
+      return undefined;
+    }
     const id = window.setInterval(() => {
       void loadPortalEmployees();
     }, 8000);
     return () => window.clearInterval(id);
-  }, [role, lockRole, loadPortalEmployees]);
+  }, [role, lockRole, activeView, loadPortalEmployees]);
 
   const liveDrift = isOnClock ? Math.max(0, Math.floor((now - fetchedAt) / 1000)) : 0;
   const liveTodaySeconds = hours.todaySeconds + liveDrift;
@@ -503,14 +508,14 @@ export default function JobCommandMasterApp({
             <button
               type="button"
               className={`toggle-btn ${role === "employee" ? "active" : ""}`}
-              onClick={() => setRole("employee")}
+              onClick={() => switchRole("employee")}
             >
               EMPLOYEE
             </button>
             <button
               type="button"
               className={`toggle-btn ${role === "boss" ? "active" : ""}`}
-              onClick={() => setRole("boss")}
+              onClick={() => switchRole("boss")}
             >
               BOSS
             </button>
@@ -596,7 +601,10 @@ export default function JobCommandMasterApp({
                 icon="🔗"
                 title="EMPLOYEE LINKS"
                 subtitle="Generate restricted portal URLs"
-                onClick={() => setActiveView("boss-links")}
+                onClick={() => {
+                  setActiveView("boss-links");
+                  void loadPortalEmployees();
+                }}
               />
             )}
           </div>
