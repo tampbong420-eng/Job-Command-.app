@@ -25,7 +25,7 @@ export default function JobTumbler({
   const current = stack[jobIndex] ?? null;
   const swipe = useSwipe((delta) => {
     onIndexChange(wrapIndex(jobIndex, delta, stack.length));
-  }, "y");
+  }, "y", 52);
 
   if (!current) {
     return (
@@ -43,11 +43,9 @@ export default function JobTumbler({
       <div className="tumbler-head">
         <div>
           <p className="card-label">Job tumbler</p>
-          <p className="swipe-hint" style={{ textAlign: "left", margin: "4px 0 0" }}>
-            Combination lock · swipe to cycle
-          </p>
+          <p className="swipe-hint">Flick to cycle · lock to this crew</p>
         </div>
-        <span className="shift-tag">
+        <span className="shift-tag shock">
           {jobIndex + 1} / {stack.length}
         </span>
       </div>
@@ -59,6 +57,8 @@ export default function JobTumbler({
         onPointerUp={swipe.onPointerUp}
         onPointerCancel={swipe.onPointerUp}
       >
+        <span className="tumbler-knurl left" aria-hidden="true" />
+        <span className="tumbler-knurl right" aria-hidden="true" />
         <span className="tumbler-notch" aria-hidden="true" />
         <span className="tumbler-window" aria-hidden="true" />
         <div className="tumbler-track">
@@ -66,7 +66,7 @@ export default function JobTumbler({
             const slotIndex = wrapIndex(jobIndex, offset, stack.length);
             const job = stack[slotIndex];
             if (!job) return null;
-            const y = offset * 56 + swipe.drag * 0.35;
+            const y = offset * 56 + swipe.drag * 0.42;
             const abs = Math.abs(offset);
             return (
               <article
@@ -76,8 +76,8 @@ export default function JobTumbler({
                 }`}
                 style={{
                   transform: `translateY(${y}px)`,
-                  opacity: abs === 0 ? 1 : abs === 1 ? 0.55 : 0.22,
-                  filter: abs === 0 ? "none" : "blur(0.4px)",
+                  opacity: abs === 0 ? 1 : abs === 1 ? 0.5 : 0.18,
+                  filter: abs === 0 ? "none" : "blur(0.35px)",
                 }}
               >
                 <div className="slot-copy">
@@ -103,7 +103,11 @@ export default function JobTumbler({
           {lockedToThis ? "●" : "◎"}
         </span>
         <span>
-          <small>{lockedToThis ? "Locked to this crew" : `Assign to ${member.name.split(" ")[0]}`}</small>
+          <small>
+            {lockedToThis
+              ? "Locked to this crew"
+              : `Assign to ${member.name.split(" ")[0]}`}
+          </small>
           <b>{lockedToThis ? "LOCKED" : "LOCK JOB"}</b>
         </span>
       </button>

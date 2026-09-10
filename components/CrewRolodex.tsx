@@ -1,6 +1,6 @@
 "use client";
 
-import { initials, wrapIndex } from "@/lib/format";
+import { clockLabel, initials, wrapIndex } from "@/lib/format";
 import type { CrewMember } from "@/lib/types";
 import { useSwipe } from "@/lib/use-swipe";
 
@@ -16,13 +16,13 @@ export default function CrewRolodex({
   const member = crew[index];
   const swipe = useSwipe((delta) => {
     onIndexChange(wrapIndex(index, delta, crew.length));
-  }, "x");
+  }, "x", 72);
 
   if (!member) return null;
 
   return (
     <section
-      className={`plate rolodex-strip${swipe.dragging ? " is-dragging" : ""}`}
+      className={`rolodex-strip${swipe.dragging ? " is-dragging" : ""}`}
       aria-label="Crew rolodex"
       onPointerDown={swipe.onPointerDown}
       onPointerMove={swipe.onPointerMove}
@@ -30,15 +30,15 @@ export default function CrewRolodex({
       onPointerCancel={swipe.onPointerUp}
       style={{
         transform: swipe.dragging
-          ? `translateX(${swipe.drag * 0.15}px)`
+          ? `translateX(${Math.max(-48, Math.min(48, swipe.drag * 0.28))}px)`
           : undefined,
       }}
     >
       <div className="rolodex-person">
-        <div className="crew-photo">
+        <div className={`crew-photo duty-${member.status}`}>
           {member.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={member.photoUrl} alt={member.name} />
+            <img src={member.photoUrl} alt="" />
           ) : (
             <span className="initials">{initials(member.name)}</span>
           )}
@@ -46,8 +46,12 @@ export default function CrewRolodex({
         <div className="rolodex-copy">
           <p className="card-label">{member.role}</p>
           <h2>{member.name}</h2>
-          <p>{member.currentJob}</p>
+          <p>{member.id.toUpperCase()}</p>
         </div>
+        <span className={`status-pill ${member.status}`} aria-live="polite">
+          <span className="status-dot" />
+          {clockLabel(member.status)}
+        </span>
       </div>
       <div className="rolodex-dots">
         {crew.map((row, i) => (
@@ -62,7 +66,6 @@ export default function CrewRolodex({
           />
         ))}
       </div>
-      <p className="swipe-hint">Swipe left or right</p>
     </section>
   );
 }

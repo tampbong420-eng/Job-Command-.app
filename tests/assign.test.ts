@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { lockJobToCrew, activeJobs } from "../lib/assign";
+import { lockJobToCrew, activeJobs, toggleCrewClock } from "../lib/assign";
 import type { CrewMember, Job } from "../lib/types";
 
 const crew: CrewMember[] = [
@@ -127,4 +127,11 @@ test("activeJobs drops completed work from the tumbler", () => {
     activeJobs(jobs).map((job) => job.id),
     ["c-northline", "c-hale", "c-shah"],
   );
+});
+
+test("toggleCrewClock flips duty without dropping the roster", () => {
+  const off = toggleCrewClock(crew, "e-mike");
+  assert.equal(off.find((row) => row.id === "e-mike")?.status, "off");
+  const on = toggleCrewClock(off, "e-mike", "2026-09-10T18:00:00.000Z");
+  assert.equal(on.find((row) => row.id === "e-mike")?.status, "active");
 });

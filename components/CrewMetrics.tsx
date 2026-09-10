@@ -8,9 +8,11 @@ import { useLiveNow } from "@/lib/use-live-time";
 export default function CrewMetrics({
   member,
   job,
+  onToggleClock,
 }: {
   member: CrewMember;
   job: Job | null;
+  onToggleClock: () => void;
 }) {
   const now = useLiveNow();
   const miles =
@@ -23,27 +25,34 @@ export default function CrewMetrics({
           { lat: job.lat, lng: job.lng },
         )
       : null;
+  const onDuty = member.status !== "off";
 
   return (
     <section className="plate metrics-grid" aria-label="Crew metrics">
-      <div className="metric">
+      <div className={`metric ${onDuty ? "on" : "off"}`}>
         <p className="metric-label">Live hours</p>
         <b>
-          {member.status === "off"
+          {!onDuty
             ? `${member.weeklyHoursLogged}h`
             : now === 0
               ? "—"
               : formatLiveHours(member.startedAt, now)}
         </b>
       </div>
-      <div className={`metric clock ${member.status === "off" ? "off" : "on"}`}>
+      <button
+        type="button"
+        className={`metric clock toggle ${onDuty ? "on" : "off"}`}
+        onClick={onToggleClock}
+        aria-pressed={onDuty}
+      >
         <p className="metric-label">Clock</p>
         <b>{clockLabel(member.status)}</b>
-      </div>
-      <div className="metric distance">
+        <span className="toggle-hint">{onDuty ? "Tap off" : "Tap on"}</span>
+      </button>
+      <div className={`metric distance ${onDuty ? "on" : "off"}`}>
         <p className="metric-label">Distance</p>
         <b>
-          {member.status === "off"
+          {!onDuty
             ? "GPS off"
             : `${formatMiles(miles)}${miles != null ? ` · ${etaFromMiles(miles)}` : ""}`}
         </b>

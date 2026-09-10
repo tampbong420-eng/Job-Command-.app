@@ -46,3 +46,21 @@ export function lockJobToCrew(
 export function activeJobs(jobs: Job[]): Job[] {
   return jobs.filter((job) => job.status !== "completed");
 }
+
+export function toggleCrewClock(
+  crew: CrewMember[],
+  employeeId: string,
+  now = new Date().toISOString(),
+): CrewMember[] {
+  return crew.map((row) => {
+    if (row.id !== employeeId) return row;
+    if (row.status === "active") {
+      return { ...row, status: "off" };
+    }
+    return {
+      ...row,
+      status: "active",
+      startedAt: row.startedAt ?? now,
+    };
+  });
+}

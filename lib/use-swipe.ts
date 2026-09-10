@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const THRESHOLD = 42;
+const DISTANCE = 28;
+const VELOCITY = 0.38;
 
 export function useSwipe(
-  onStep: (delta: 1 | -1) => void,
+  onStep: (delta: number) => void,
   axis: "x" | "y" = "x",
+  slotSize = 56,
 ) {
   const [drag, setDrag] = useState(0);
-  const start = useRef<{ x: number; y: number } | null>(null);
-  const moved = useRef(false);
+  const start = useRef<{ x: number; y: number; at: number } | null>(null);
   const last = useRef(0);
   const onStepRef = useRef(onStep);
 
@@ -17,8 +18,7 @@ export function useSwipe(
   }, [onStep]);
 
   const onPointerDown = useCallback((event: React.PointerEvent) => {
-    start.current = { x: event.clientX, y: event.clientY };
-    moved.current = false;
+    start.current = { x: event.clientX, y: event.clientY, at: Date.now() };
     last.current = 0;
     event.currentTarget.setPointerCapture(event.pointerId);
   }, []);
@@ -28,23 +28,26 @@ export function useSwipe(
       if (!start.current) return;
       const dx = event.clientX - start.current.x;
       const dy = event.clientY - start.current.y;
-      const value = axis === "x" ? dx : dy;
-      if (Math.abs(dx) > 8 || Math.abs(dy) > 8) moved.current = true;
-      last.current = value;
-      setDrag(value);
+      const primary = axis === "x" ? dx : dy;
+      const secondary = axis === "x" ? dy : dx;
+      if (Math.abs(secondary) > Math.abs(primary) + 12) return;
+      last.current = primary;
+      setDrag(primary);
     },
     [axis],
   );
 
   const onPointerUp = useCallback(() => {
     const value = last.current;
+    const elapsed = Math.max(1, Date.now() - (start.current?.at ?? Date.now()));
     start.current = null;
     last.current = 0;
     setDrag(0);
-    if (Math.abs(value) > THRESHOLD) {
-      onStepRef.current(value < 0 ? 1 : -1);
-    }
-  }, []);
+    const speed = value / elapsed;
+    if (Math.abs(value) < DISTANCE && Math.abs(speed) < VELOCITY) return;
+    const steps = Math.max(1, Math.min(3, Math.round(Math.abs(value) / slotSize) || 1));
+    onStepRef.current((value < 0 ? 1 : -1) * steps);
+  }, [slotSize]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -62,7 +65,7 @@ export function useSwipe(
 
   return {
     drag,
-    dragging: Math.abs(drag) > 8,
+    dragging: Math.abs(drag) > 6,
     onPointerDown,
     onPointerMove,
     onPointerUp,

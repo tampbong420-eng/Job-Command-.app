@@ -4,9 +4,8 @@ import CrewMetrics from "@/components/CrewMetrics";
 import CrewRolodex from "@/components/CrewRolodex";
 import EmployeeHome from "@/components/EmployeeHome";
 import JobTumbler from "@/components/JobTumbler";
-import { lockJobToCrew, activeJobs } from "@/lib/assign";
+import { lockJobToCrew, activeJobs, toggleCrewClock } from "@/lib/assign";
 import { CREW, JOBS } from "@/lib/demo-data";
-import { clockLabel } from "@/lib/format";
 import type { CrewMember, Job, NavTab, Role } from "@/lib/types";
 import { useLiveDate } from "@/lib/use-live-time";
 import { useEffect, useMemo, useState } from "react";
@@ -53,6 +52,11 @@ export default function JobCommandApp() {
     setTicking(true);
     window.setTimeout(() => setTicking(false), 320);
     setNotice(`Locked ${selectedJob.jobTitle} to ${member.name}.`);
+  }
+
+  function toggleClock() {
+    if (!member) return;
+    setCrew((current) => toggleCrewClock(current, member.id));
   }
 
   return (
@@ -110,22 +114,10 @@ export default function JobCommandApp() {
       )}
 
       {role === "boss" && tab === "command" && member && (
-        <section className="page">
-          <div className="greeting-row">
-            <div>
-              <p className="section-kicker">{fieldDate}</p>
-              <h1>
-                CREW
-                <br />
-                <strong>{member.name.split(" ")[0].toUpperCase()}.</strong>
-              </h1>
-            </div>
-            <div
-              className={`status-pill ${member.status === "off" ? "" : "active"} ${member.status}`}
-            >
-              <span className="status-dot" />
-              {clockLabel(member.status)}
-            </div>
+        <section className="page crew-desk">
+          <div className="crew-head">
+            <p className="section-kicker">{fieldDate}</p>
+            <h1>CREW</h1>
           </div>
           <CrewRolodex
             crew={crew}
@@ -140,7 +132,11 @@ export default function JobCommandApp() {
             onIndexChange={setJobIndex}
             onLock={lockCurrentJob}
           />
-          <CrewMetrics member={member} job={assignedJob} />
+          <CrewMetrics
+            member={member}
+            job={assignedJob}
+            onToggleClock={toggleClock}
+          />
         </section>
       )}
 
