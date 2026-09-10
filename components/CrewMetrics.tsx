@@ -3,7 +3,7 @@
 import { etaFromMiles, formatMiles, milesBetween } from "@/lib/geo";
 import { clockLabel, formatLiveHours } from "@/lib/format";
 import type { CrewMember, Job } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useLiveNow } from "@/lib/use-live-time";
 
 export default function CrewMetrics({
   member,
@@ -12,14 +12,7 @@ export default function CrewMetrics({
   member: CrewMember;
   job: Job | null;
 }) {
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    if (member.status !== "active") return undefined;
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, [member.status, member.id]);
-
+  const now = useLiveNow();
   const miles =
     member.lat != null &&
     member.lng != null &&
@@ -35,7 +28,13 @@ export default function CrewMetrics({
     <section className="plate metrics-grid" aria-label="Crew metrics">
       <div className="metric">
         <p className="metric-label">Live hours</p>
-        <b>{member.status === "off" ? `${member.weeklyHoursLogged}h` : formatLiveHours(member.startedAt, now)}</b>
+        <b>
+          {member.status === "off"
+            ? `${member.weeklyHoursLogged}h`
+            : now === 0
+              ? "—"
+              : formatLiveHours(member.startedAt, now)}
+        </b>
       </div>
       <div className={`metric clock ${member.status === "off" ? "off" : "on"}`}>
         <p className="metric-label">Clock</p>

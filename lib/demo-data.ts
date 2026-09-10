@@ -1,8 +1,8 @@
 import type { CrewMember, Job } from "./types";
 
-const thisMorning = new Date(Date.now() - 2.25 * 3_600_000).toISOString();
-const danaStart = new Date(Date.now() - 3.5 * 3_600_000).toISOString();
-const livStart = new Date(Date.now() - 1.25 * 3_600_000).toISOString();
+const thisMorning = "2026-09-10T11:29:00.000Z";
+const danaStart = "2026-09-10T10:15:00.000Z";
+const livStart = "2026-09-10T12:20:00.000Z";
 
 export const CREW: CrewMember[] = [
   {

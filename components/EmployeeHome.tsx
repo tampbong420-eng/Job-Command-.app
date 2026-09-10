@@ -1,7 +1,7 @@
 "use client";
 
-import { formatClockTime, greeting, longDate } from "@/lib/format";
 import type { CrewMember, Job } from "@/lib/types";
+import { useLiveClockTime, useLiveDate, useLiveGreeting } from "@/lib/use-live-time";
 import { useMemo, useState } from "react";
 
 export default function EmployeeHome({
@@ -12,6 +12,9 @@ export default function EmployeeHome({
   jobs: Job[];
 }) {
   const [onClock, setOnClock] = useState(member.status === "active");
+  const date = useLiveDate();
+  const hello = useLiveGreeting();
+  const since = useLiveClockTime(member.startedAt);
   const firstStop = useMemo(() => {
     return (
       jobs.find((job) => job.id === member.currentJobId) ??
@@ -25,9 +28,9 @@ export default function EmployeeHome({
     <section className="page">
       <div className="greeting-row">
         <div>
-          <p className="section-kicker">{longDate()}</p>
+          <p className="section-kicker">{date}</p>
           <h1>
-            {greeting()},
+            {hello},
             <br />
             <strong>{(member.name.split(" ")[0] ?? "Crew").toUpperCase()}.</strong>
           </h1>
@@ -46,9 +49,7 @@ export default function EmployeeHome({
           <div>
             <p className="card-label">Today&apos;s shift</p>
             <p className={`shift-time ${onClock ? "live" : ""}`}>
-              {onClock
-                ? `Active since ${formatClockTime(member.startedAt)}`
-                : "Not started yet"}
+              {onClock ? `Active since ${since}` : "Not started yet"}
             </p>
           </div>
           <span className="shift-tag">{onClock ? "ACTIVE" : "READY"}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { clockLabel, initials, wrapIndex } from "@/lib/format";
+import { initials, wrapIndex } from "@/lib/format";
 import type { CrewMember } from "@/lib/types";
 import { useSwipe } from "@/lib/use-swipe";
 
@@ -62,7 +62,7 @@ export default function CrewRolodex({
           />
         ))}
       </div>
-      <p className="swipe-hint">Swipe for {clockLabel(member.status).toLowerCase()} crew</p>
+      <p className="swipe-hint">Swipe left or right</p>
     </section>
   );
 }

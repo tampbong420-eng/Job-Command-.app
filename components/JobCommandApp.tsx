@@ -6,8 +6,9 @@ import EmployeeHome from "@/components/EmployeeHome";
 import JobTumbler from "@/components/JobTumbler";
 import { lockJobToCrew, activeJobs } from "@/lib/assign";
 import { CREW, JOBS } from "@/lib/demo-data";
-import { clockLabel, longDate } from "@/lib/format";
+import { clockLabel } from "@/lib/format";
 import type { CrewMember, Job, NavTab, Role } from "@/lib/types";
+import { useLiveDate } from "@/lib/use-live-time";
 import { useEffect, useMemo, useState } from "react";
 
 const TABS: { id: NavTab; label: string; icon: string }[] = [
@@ -26,6 +27,7 @@ export default function JobCommandApp() {
   const [jobIndex, setJobIndex] = useState(0);
   const [ticking, setTicking] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const fieldDate = useLiveDate();
 
   const member = crew[crewIndex] ?? crew[0];
   const stack = useMemo(() => activeJobs(jobs), [jobs]);
@@ -111,7 +113,7 @@ export default function JobCommandApp() {
         <section className="page">
           <div className="greeting-row">
             <div>
-              <p className="section-kicker">{longDate()}</p>
+              <p className="section-kicker">{fieldDate}</p>
               <h1>
                 CREW
                 <br />
