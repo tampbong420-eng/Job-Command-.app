@@ -68,6 +68,7 @@ export default function TalkButton({
       const payload = (await response.json()) as TalkResult;
       onResult(payload.commands ? payload : parseTalk(spoken, snapshot));
       setText("");
+      setOpen(false);
     } catch {
       onResult(parseTalk(spoken, snapshot));
     } finally {

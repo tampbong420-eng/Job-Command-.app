@@ -97,7 +97,7 @@ img {
   height: 100dvh;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 18px 18px 112px;
+  padding: 18px 18px 148px;
   display: flex;
   position: relative;
   overflow: hidden;
@@ -1587,9 +1587,9 @@ button.metric.toggle {
 .talk-fab {
   position: fixed;
   z-index: 7;
-  bottom: 88px;
+  bottom: 92px;
   left: 50%;
-  transform: translateX(92px);
+  transform: translateX(-138px);
   min-width: 86px;
   min-height: 44px;
   border-radius: 999px;
