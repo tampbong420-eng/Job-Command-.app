@@ -50,7 +50,7 @@ export function jobStatusLabel(status: "lead" | "pending" | "in_progress" | "com
   if (status === "lead") return "New lead";
   if (status === "pending") return "Pending";
   if (status === "in_progress") return "Active";
-  return "Completed";
+  return "Finished";
 }
 
 export function jobTone(status: "lead" | "pending" | "in_progress" | "completed"): string {

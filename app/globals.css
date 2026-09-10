@@ -1499,3 +1499,147 @@ button.metric.toggle {
   margin: 0;
   font-size: 13px;
 }
+
+.customer-card {
+  padding: 10px 0 12px;
+  border-top: 1px solid #ffffff12;
+}
+
+.customer-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.customer-card-top small,
+.paper-row small {
+  display: block;
+  color: var(--tone, var(--yellow));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 10px;
+}
+
+.customer-card-top b,
+.paper-row b {
+  display: block;
+  font-size: 15px;
+}
+
+.customer-card-top span,
+.customer-card-top em,
+.paper-row span,
+.paper-row em {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.status-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.lane-button {
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--tone) 50%, #000);
+  color: var(--tone);
+  background: #09090b;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 10px;
+}
+
+.lane-button.is-on {
+  background: color-mix(in srgb, var(--tone) 22%, #09090b);
+  box-shadow: 0 0 0 1px var(--tone);
+}
+
+.lane-button.tone-delete {
+  --tone: #fda4a4;
+  grid-column: 1 / -1;
+  color: #fda4a4;
+  border-color: #ff2d2d66;
+}
+
+.customer-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.paper-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid #ffffff12;
+}
+
+.talk-fab {
+  position: fixed;
+  z-index: 7;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(92px);
+  min-width: 86px;
+  min-height: 44px;
+  border-radius: 999px;
+  background: var(--employee-grad);
+  color: #1c1008;
+  border: 1px solid #ff770088;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+}
+
+.talk-fab.is-hot {
+  background: var(--lead-new);
+  color: #fff;
+}
+
+.talk-sheet .board-copy {
+  margin: 8px 0 12px;
+}
+
+.talk-input {
+  width: 100%;
+  background: #09090b;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 84px;
+}
+
+.talk-actions {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.talk-actions .lock-button {
+  margin: 0;
+}
+
+.talk-heard {
+  color: var(--lime);
+  margin: 10px 0 0;
+  font-size: 12px;
+}
+
+.talk-backdrop {
+  z-index: 9;
+}

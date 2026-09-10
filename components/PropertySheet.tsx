@@ -1,5 +1,6 @@
 "use client";
 
+import StatusButtons from "@/components/StatusButtons";
 import { jobStatusLabel, jobTone } from "@/lib/format";
 import {
   mapsDirectionsUrl,
@@ -8,16 +9,20 @@ import {
   mapsStreetViewUrl,
   originQuery,
 } from "@/lib/maps";
-import type { CrewMember, Job } from "@/lib/types";
+import type { CrewMember, Job, JobStatus } from "@/lib/types";
 
 export default function PropertySheet({
   job,
   member,
   onClose,
+  onStatus,
+  onDelete,
 }: {
   job: Job;
   member: CrewMember;
   onClose: () => void;
+  onStatus: (status: JobStatus) => void;
+  onDelete: () => void;
 }) {
   const origin = originQuery(member);
   const directions = mapsDirectionsUrl(job, origin);
@@ -69,6 +74,11 @@ export default function PropertySheet({
             <dd>{job.worker}</dd>
           </div>
         </dl>
+        <StatusButtons
+          job={job}
+          onStatus={(status) => onStatus(status)}
+          onDelete={onDelete}
+        />
         <div className="street-view">
           {streetViewEmbed ? (
             <iframe

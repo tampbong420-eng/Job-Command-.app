@@ -9,7 +9,9 @@ dispatch desk:
 - Combination-lock job tumbler that cycles **active jobs only**
 - **Get Directions** opens the active property with Street View and Google Maps
 - Live Google Map at the bottom of the crew desk
-- Semantic job colors: new leads red, pending orange/yellow, active light green, completed charcoal
+- Semantic job colors: new leads red, pending orange/yellow, active light green, finished charcoal
+- Customer cards with **New lead / Pending / Active / Finished / Delete**
+- **AI Talk** on every page for status, estimates, and time cards
 
 The Employee view stays on the existing home layout and is not the focus of
 this pass.

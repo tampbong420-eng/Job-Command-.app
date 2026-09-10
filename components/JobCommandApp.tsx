@@ -6,9 +6,11 @@ import CrewMetrics from "@/components/CrewMetrics";
 import CrewRolodex from "@/components/CrewRolodex";
 import EditHoursCalendar from "@/components/EditHoursCalendar";
 import EmployeeHome from "@/components/EmployeeHome";
+import EstimatesBoard, { TimeCardsBoard } from "@/components/EstimatesBoard";
 import JobStatusRail from "@/components/JobStatusRail";
 import JobTumbler from "@/components/JobTumbler";
 import PropertySheet from "@/components/PropertySheet";
+import TalkButton from "@/components/TalkButton";
 import {
   lockJobToCrew,
   activeJobs,
@@ -18,8 +20,21 @@ import {
   toggleCrewGps,
   updateWeeklySchedule,
 } from "@/lib/assign";
-import { CREW, JOBS } from "@/lib/demo-data";
-import type { CrewMember, DaySchedule, Job, NavTab, Role } from "@/lib/types";
+import { applyCommands } from "@/lib/commands";
+import { CREW, ESTIMATES, JOBS, TIMECARDS } from "@/lib/demo-data";
+import type {
+  CrewMember,
+  DaySchedule,
+  Estimate,
+  Job,
+  JobStatus,
+  NavTab,
+  Role,
+  ShopSnapshot,
+  ShopView,
+  TalkResult,
+  TimeCard,
+} from "@/lib/types";
 import { useLiveDate } from "@/lib/use-live-time";
 import { useEffect, useMemo, useState } from "react";
 
@@ -33,9 +48,12 @@ const TABS: { id: NavTab; label: string; icon: string }[] = [
 export default function JobCommandApp() {
   const [role, setRole] = useState<Role>("boss");
   const [tab, setTab] = useState<NavTab>("command");
+  const [paper, setPaper] = useState<"jobs" | "estimates" | "timecards">("jobs");
   const [desk, setDesk] = useState<"crew" | "hours">("crew");
   const [crew, setCrew] = useState<CrewMember[]>(CREW);
   const [jobs, setJobs] = useState<Job[]>(JOBS);
+  const [estimates, setEstimates] = useState<Estimate[]>(ESTIMATES);
+  const [timeCards, setTimeCards] = useState<TimeCard[]>(TIMECARDS);
   const [crewIndex, setCrewIndex] = useState(0);
   const [jobIndex, setJobIndex] = useState(() =>
     tumblerIndexForCrew(JOBS, CREW[0].id, CREW[0].currentJobId),
@@ -50,11 +68,70 @@ export default function JobCommandApp() {
   const selectedJob = stack[jobIndex] ?? null;
   const property = member ? assignedJob(jobs, member) ?? selectedJob : null;
 
+  const snapshot: ShopSnapshot = {
+    jobs,
+    crew,
+    estimates,
+    timeCards,
+    selectedJobId: property?.id ?? selectedJob?.id ?? null,
+    selectedCrewId: member?.id ?? null,
+  };
+
   useEffect(() => {
     if (!notice) return undefined;
     const id = window.setTimeout(() => setNotice(null), 2800);
     return () => window.clearTimeout(id);
   }, [notice]);
+
+  function goView(view: ShopView | null) {
+    if (!view) return;
+    if (view === "hours") {
+      setTab("command");
+      setDesk("hours");
+      return;
+    }
+    if (view === "command") {
+      setTab("command");
+      setDesk("crew");
+      return;
+    }
+    setTab("jobs");
+    setPaper(view);
+  }
+
+  function applyTalk(result: TalkResult) {
+    const next = applyCommands(snapshot, result.commands);
+    setJobs(next.state.jobs);
+    setCrew(next.state.crew);
+    setEstimates(next.state.estimates);
+    setTimeCards(next.state.timeCards);
+    goView(next.view);
+    setNotice(result.say || next.notices.join(" "));
+    if (member) {
+      setJobIndex(
+        tumblerIndexForCrew(
+          next.state.jobs,
+          member.id,
+          next.state.crew.find((row) => row.id === member.id)?.currentJobId ?? null,
+        ),
+      );
+    }
+  }
+
+  function setJobStatus(jobId: string, status: JobStatus) {
+    applyTalk({
+      say: "",
+      commands: [{ type: "set_status", query: jobId, status }],
+    });
+  }
+
+  function deleteJob(jobId: string) {
+    applyTalk({
+      say: "",
+      commands: [{ type: "delete_job", query: jobId }],
+    });
+    setPropertyOpen(false);
+  }
 
   function lockCurrentJob() {
     if (!member || !selectedJob) return;
@@ -202,7 +279,34 @@ export default function JobCommandApp() {
         </section>
       )}
 
-      {tab === "jobs" && role === "boss" && <BossJobsBoard jobs={jobs} />}
+      {tab === "jobs" && role === "boss" && paper === "jobs" && (
+        <BossJobsBoard
+          jobs={jobs}
+          estimates={estimates}
+          timeCards={timeCards}
+          onStatus={setJobStatus}
+          onDelete={deleteJob}
+          onOpenEstimates={() => setPaper("estimates")}
+          onOpenTimeCards={() => setPaper("timecards")}
+        />
+      )}
+
+      {tab === "jobs" && role === "boss" && paper === "estimates" && (
+        <EstimatesBoard
+          jobs={jobs}
+          estimates={estimates}
+          onBack={() => setPaper("jobs")}
+        />
+      )}
+
+      {tab === "jobs" && role === "boss" && paper === "timecards" && (
+        <TimeCardsBoard
+          crew={crew}
+          jobs={jobs}
+          timeCards={timeCards}
+          onBack={() => setPaper("jobs")}
+        />
+      )}
 
       {tab === "jobs" && role === "employee" && (
         <section className="page stub-page">
@@ -245,6 +349,8 @@ export default function JobCommandApp() {
         </section>
       )}
 
+      <TalkButton snapshot={snapshot} onResult={applyTalk} />
+
       <nav className="bottom-nav" aria-label="Primary">
         {TABS.map((item) => (
           <button
@@ -254,6 +360,7 @@ export default function JobCommandApp() {
             onClick={() => {
               setTab(item.id);
               if (item.id !== "command") setDesk("crew");
+              if (item.id === "jobs") setPaper("jobs");
             }}
           >
             <span className="nav-icon" aria-hidden="true">
@@ -267,9 +374,11 @@ export default function JobCommandApp() {
       {notice && <div className="toast">{notice}</div>}
       {propertyOpen && property && member && (
         <PropertySheet
-          job={property}
+          job={jobs.find((job) => job.id === property.id) ?? property}
           member={member}
           onClose={() => setPropertyOpen(false)}
+          onStatus={(status) => setJobStatus(property.id, status)}
+          onDelete={() => deleteJob(property.id)}
         />
       )}
     </main>

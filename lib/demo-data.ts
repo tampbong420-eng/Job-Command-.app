@@ -1,4 +1,4 @@
-import type { CrewMember, Job } from "./types";
+import type { CrewMember, Estimate, Job, TimeCard } from "./types";
 import { weekdayHours } from "./schedule";
 
 const thisMorning = "2026-09-10T11:29:00.000Z";
@@ -164,3 +164,32 @@ export const JOBS: Job[] = [
 ];
 
 export const ACTIVE_JOBS = JOBS.filter((job) => job.status === "in_progress");
+
+export const ESTIMATES: Estimate[] = [
+  {
+    id: "est-hale",
+    jobId: "c-hale",
+    amount: 4200,
+    notes: "Cedar fence and gate package",
+    createdAt: "2026-09-09T18:00:00.000Z",
+  },
+];
+
+export const TIMECARDS: TimeCard[] = [
+  {
+    id: "tc-mike-1",
+    employeeId: "e-mike",
+    jobId: "c-northline",
+    hours: 4.5,
+    date: "2026-09-10",
+    notes: "HVAC demo and recovery",
+  },
+  {
+    id: "tc-dana-1",
+    employeeId: "e-dana",
+    jobId: "c-hale",
+    hours: 8,
+    date: "2026-09-10",
+    notes: "Fence layout and posts",
+  },
+];

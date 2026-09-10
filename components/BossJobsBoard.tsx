@@ -1,20 +1,39 @@
+"use client";
+
+import CustomerCard from "@/components/CustomerCard";
 import { jobStatusLabel, jobTone } from "@/lib/format";
-import type { Job, JobStatus } from "@/lib/types";
+import type { Estimate, Job, JobStatus, TimeCard } from "@/lib/types";
 
 const GROUPS: JobStatus[] = ["lead", "pending", "in_progress", "completed"];
 
-export default function BossJobsBoard({ jobs }: { jobs: Job[] }) {
+export default function BossJobsBoard({
+  jobs,
+  estimates,
+  timeCards,
+  onStatus,
+  onDelete,
+  onOpenEstimates,
+  onOpenTimeCards,
+}: {
+  jobs: Job[];
+  estimates: Estimate[];
+  timeCards: TimeCard[];
+  onStatus: (jobId: string, status: JobStatus) => void;
+  onDelete: (jobId: string) => void;
+  onOpenEstimates: (jobId: string) => void;
+  onOpenTimeCards: (jobId: string) => void;
+}) {
   return (
     <section className="page jobs-board">
       <p className="section-kicker">Jobs</p>
       <h1>
-        Color
+        Customer
         <br />
-        <strong>Board.</strong>
+        <strong>Cards.</strong>
       </h1>
       <p className="board-copy">
-        New leads in red, pending in orange, active work in light green, completed
-        in charcoal. The Command tumbler only cycles active jobs.
+        Tap New lead, Pending, Active, Finished, or Delete on a card. Talk can
+        file estimates and time cards into the same customer.
       </p>
       {GROUPS.map((status) => {
         const rows = jobs.filter((job) => job.status === status);
@@ -30,16 +49,16 @@ export default function BossJobsBoard({ jobs }: { jobs: Job[] }) {
               <p className="empty-group">None in this lane.</p>
             ) : (
               rows.map((job) => (
-                <article key={job.id} className="job-row">
-                  <div>
-                    <small>{job.scheduledTime}</small>
-                    <b>{job.jobTitle}</b>
-                    <span>
-                      {job.customerName} · {job.address}
-                    </span>
-                  </div>
-                  <em>{job.worker}</em>
-                </article>
+                <CustomerCard
+                  key={job.id}
+                  job={job}
+                  estimates={estimates}
+                  timeCards={timeCards}
+                  onStatus={(next) => onStatus(job.id, next)}
+                  onDelete={() => onDelete(job.id)}
+                  onOpenEstimates={() => onOpenEstimates(job.id)}
+                  onOpenTimeCards={() => onOpenTimeCards(job.id)}
+                />
               ))
             )}
           </section>
