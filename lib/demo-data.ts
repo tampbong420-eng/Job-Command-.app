@@ -1,4 +1,5 @@
 import type { CrewMember, Job } from "./types";
+import { weekdayHours } from "./schedule";
 
 const thisMorning = "2026-09-10T11:29:00.000Z";
 const danaStart = "2026-09-10T10:15:00.000Z";
@@ -17,6 +18,7 @@ export const CREW: CrewMember[] = [
     startedAt: thisMorning,
     weeklyHoursTarget: 40,
     weeklyHoursLogged: 4.5,
+    weeklySchedule: weekdayHours("07:00", "16:00"),
     lat: 47.62482,
     lng: -122.3629,
     gpsLive: true,
@@ -33,6 +35,7 @@ export const CREW: CrewMember[] = [
     startedAt: danaStart,
     weeklyHoursTarget: 36,
     weeklyHoursLogged: 8,
+    weeklySchedule: weekdayHours("08:00", "16:00", ["mon", "tue", "wed", "thu"]),
     lat: 47.62572,
     lng: -122.3089,
     gpsLive: true,
@@ -49,6 +52,7 @@ export const CREW: CrewMember[] = [
     startedAt: null,
     weeklyHoursTarget: 20,
     weeklyHoursLogged: 0,
+    weeklySchedule: weekdayHours("08:00", "12:00", ["mon", "wed", "fri"]),
     lat: null,
     lng: null,
     gpsLive: false,
@@ -65,6 +69,7 @@ export const CREW: CrewMember[] = [
     startedAt: livStart,
     weeklyHoursTarget: 40,
     weeklyHoursLogged: 3.5,
+    weeklySchedule: weekdayHours("07:30", "16:30"),
     lat: 47.62435,
     lng: -122.3641,
     gpsLive: true,
@@ -129,6 +134,20 @@ export const JOBS: Job[] = [
     lng: -122.312680476486,
   },
   {
+    id: "c-chen",
+    customerName: "Maya Chen",
+    phone: "(206) 555-0128",
+    address: "1421 NW 61st St, Seattle, WA 98107",
+    jobTitle: "Deck stain · Ballard",
+    status: "pending",
+    scheduledTime: "01:30 PM",
+    worker: "Unassigned",
+    workerId: null,
+    priority: "medium",
+    lat: 47.6729,
+    lng: -122.376,
+  },
+  {
     id: "c-elliott",
     customerName: "Elliott Bay Tower",
     phone: "(206) 555-0188",
@@ -144,4 +163,4 @@ export const JOBS: Job[] = [
   },
 ];
 
-export const ACTIVE_JOBS = JOBS.filter((job) => job.status !== "completed");
+export const ACTIVE_JOBS = JOBS.filter((job) => job.status === "in_progress");

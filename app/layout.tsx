@@ -23,7 +23,7 @@ const display = Oswald({
 export const metadata: Metadata = {
   title: "JOB COMMAND",
   description:
-    "Crew dispatch dashboard with a rolodex, combination-style job lock, and live field metrics.",
+    "Boss crew desk with weekly hour editing, live Google Maps tracking, and color-coded job status.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

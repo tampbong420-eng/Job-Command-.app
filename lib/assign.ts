@@ -1,7 +1,14 @@
 import type { CrewMember, Job } from "./types";
 
 export function activeJobs(jobs: Job[]): Job[] {
-  return jobs.filter((job) => job.status !== "completed");
+  return jobs.filter((job) => job.status === "in_progress");
+}
+
+export function assignedJob(jobs: Job[], member: CrewMember): Job | null {
+  if (member.currentJobId) {
+    return jobs.find((job) => job.id === member.currentJobId) ?? null;
+  }
+  return jobs.find((job) => job.workerId === member.id && job.status === "in_progress") ?? null;
 }
 
 export function tumblerIndexForCrew(
@@ -36,7 +43,10 @@ export function lockJobToCrew(
         ...row,
         worker: employee.name,
         workerId: employee.id,
-        status: row.status === "lead" ? "in_progress" : row.status,
+        status:
+          row.status === "lead" || row.status === "pending"
+            ? "in_progress"
+            : row.status,
       };
     }
     if (row.workerId === employee.id && row.status !== "completed") {
@@ -97,4 +107,14 @@ export function toggleCrewGps(
     if (row.id !== employeeId) return row;
     return { ...row, gpsLive: !row.gpsLive };
   });
+}
+
+export function updateWeeklySchedule(
+  crew: CrewMember[],
+  employeeId: string,
+  weeklySchedule: CrewMember["weeklySchedule"],
+): CrewMember[] {
+  return crew.map((row) =>
+    row.id === employeeId ? { ...row, weeklySchedule } : row,
+  );
 }

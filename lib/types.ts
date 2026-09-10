@@ -1,8 +1,16 @@
 export type CrewStatus = "active" | "break" | "off";
-export type JobStatus = "lead" | "in_progress" | "completed";
+export type JobStatus = "lead" | "pending" | "in_progress" | "completed";
 export type JobPriority = "high" | "medium" | "low";
 export type Role = "employee" | "boss";
 export type NavTab = "command" | "jobs" | "profile" | "settings";
+export type Weekday = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+
+export type DaySchedule = {
+  day: Weekday;
+  start: string;
+  end: string;
+  off: boolean;
+};
 
 export type CrewMember = {
   id: string;
@@ -16,6 +24,7 @@ export type CrewMember = {
   startedAt: string | null;
   weeklyHoursTarget: number;
   weeklyHoursLogged: number;
+  weeklySchedule: DaySchedule[];
   lat: number | null;
   lng: number | null;
   gpsLive: boolean;

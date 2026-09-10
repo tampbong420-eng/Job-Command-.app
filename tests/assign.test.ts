@@ -3,10 +3,13 @@ import assert from "node:assert/strict";
 import {
   lockJobToCrew,
   activeJobs,
+  assignedJob,
   tumblerIndexForCrew,
   toggleCrewClock,
   toggleCrewGps,
+  updateWeeklySchedule,
 } from "../lib/assign";
+import { weekdayHours } from "../lib/schedule";
 import type { CrewMember, Job } from "../lib/types";
 
 const crew: CrewMember[] = [
@@ -22,6 +25,7 @@ const crew: CrewMember[] = [
     startedAt: "2026-09-10T14:45:00.000Z",
     weeklyHoursTarget: 40,
     weeklyHoursLogged: 4.5,
+    weeklySchedule: weekdayHours("07:00", "16:00"),
     lat: 47.62,
     lng: -122.36,
     gpsLive: true,
@@ -38,6 +42,7 @@ const crew: CrewMember[] = [
     startedAt: "2026-09-10T14:45:00.000Z",
     weeklyHoursTarget: 36,
     weeklyHoursLogged: 8,
+    weeklySchedule: weekdayHours("08:00", "16:00", ["mon", "tue", "wed", "thu"]),
     lat: 47.62,
     lng: -122.3,
     gpsLive: true,
@@ -130,10 +135,10 @@ test("lockJobToCrew refuses completed jobs", () => {
   assert.equal(result.jobs, jobs);
 });
 
-test("activeJobs drops completed work from the tumbler", () => {
+test("activeJobs keeps only in-progress work on the tumbler", () => {
   assert.deepEqual(
     activeJobs(jobs).map((job) => job.id),
-    ["c-northline", "c-hale", "c-shah"],
+    ["c-northline", "c-hale"],
   );
 });
 
@@ -185,4 +190,33 @@ test("toggleCrewGps mutes location tracking for the selected crew", () => {
   assert.equal(muted.find((row) => row.id === "e-mike")?.gpsLive, false);
   const live = toggleCrewGps(muted, "e-mike");
   assert.equal(live.find((row) => row.id === "e-mike")?.gpsLive, true);
+});
+
+test("lockJobToCrew promotes a pending lead into an active job", () => {
+  const pending: Job[] = [
+    ...jobs,
+    {
+      ...jobs[2],
+      id: "c-chen",
+      jobTitle: "Deck stain",
+      status: "pending",
+    },
+  ];
+  const result = lockJobToCrew(pending, crew, "c-chen", "e-dana");
+  assert.equal(result.locked, true);
+  assert.equal(result.jobs.find((job) => job.id === "c-chen")?.status, "in_progress");
+  assert.equal(result.crew.find((row) => row.id === "e-dana")?.currentJobId, "c-chen");
+});
+
+test("assignedJob prefers the crew member's locked property", () => {
+  assert.equal(assignedJob(jobs, crew[0])?.id, "c-northline");
+  const unassigned = { ...crew[0], currentJobId: null, id: "e-sam" };
+  assert.equal(assignedJob(jobs, unassigned), null);
+});
+
+test("updateWeeklySchedule writes hours onto one crew card", () => {
+  const next = weekdayHours("09:00", "13:00", ["tue", "thu"]);
+  const updated = updateWeeklySchedule(crew, "e-mike", next);
+  assert.equal(updated.find((row) => row.id === "e-mike")?.weeklySchedule[1].start, "09:00");
+  assert.equal(updated.find((row) => row.id === "e-dana")?.weeklySchedule[0].start, "08:00");
 });

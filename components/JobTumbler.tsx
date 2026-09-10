@@ -1,7 +1,7 @@
 "use client";
 
 import { activeJobs } from "@/lib/assign";
-import { wrapIndex } from "@/lib/format";
+import { jobStatusLabel, jobTone, wrapIndex } from "@/lib/format";
 import type { CrewMember, Job } from "@/lib/types";
 import { useSwipe } from "@/lib/use-swipe";
 import { useMemo } from "react";
@@ -80,9 +80,9 @@ export default function JobTumbler({
                   filter: abs === 0 ? "none" : "blur(0.35px)",
                 }}
               >
-                <div className="slot-copy">
+                <div className={`slot-copy ${jobTone(job.status)}`}>
                   <small>
-                    {job.scheduledTime} · {job.status.replace("_", " ")}
+                    {job.scheduledTime} · {jobStatusLabel(job.status)}
                   </small>
                   <b>{job.jobTitle}</b>
                   <span>

@@ -46,6 +46,20 @@ export function formatLiveHours(startedAt: string | null, now = Date.now()): str
   return `${hours}h ${String(minutes).padStart(2, "0")}m`;
 }
 
+export function jobStatusLabel(status: "lead" | "pending" | "in_progress" | "completed"): string {
+  if (status === "lead") return "New lead";
+  if (status === "pending") return "Pending";
+  if (status === "in_progress") return "Active";
+  return "Completed";
+}
+
+export function jobTone(status: "lead" | "pending" | "in_progress" | "completed"): string {
+  if (status === "lead") return "tone-lead";
+  if (status === "pending") return "tone-pending";
+  if (status === "in_progress") return "tone-active";
+  return "tone-done";
+}
+
 export function initials(name: string): string {
   return name
     .split(/\s+/)

@@ -1,18 +1,25 @@
 "use client";
 
+import BossJobsBoard from "@/components/BossJobsBoard";
+import CrewMap from "@/components/CrewMap";
 import CrewMetrics from "@/components/CrewMetrics";
 import CrewRolodex from "@/components/CrewRolodex";
+import EditHoursCalendar from "@/components/EditHoursCalendar";
 import EmployeeHome from "@/components/EmployeeHome";
+import JobStatusRail from "@/components/JobStatusRail";
 import JobTumbler from "@/components/JobTumbler";
+import PropertySheet from "@/components/PropertySheet";
 import {
   lockJobToCrew,
   activeJobs,
+  assignedJob,
   tumblerIndexForCrew,
   toggleCrewClock,
   toggleCrewGps,
+  updateWeeklySchedule,
 } from "@/lib/assign";
 import { CREW, JOBS } from "@/lib/demo-data";
-import type { CrewMember, Job, NavTab, Role } from "@/lib/types";
+import type { CrewMember, DaySchedule, Job, NavTab, Role } from "@/lib/types";
 import { useLiveDate } from "@/lib/use-live-time";
 import { useEffect, useMemo, useState } from "react";
 
@@ -26,6 +33,7 @@ const TABS: { id: NavTab; label: string; icon: string }[] = [
 export default function JobCommandApp() {
   const [role, setRole] = useState<Role>("boss");
   const [tab, setTab] = useState<NavTab>("command");
+  const [desk, setDesk] = useState<"crew" | "hours">("crew");
   const [crew, setCrew] = useState<CrewMember[]>(CREW);
   const [jobs, setJobs] = useState<Job[]>(JOBS);
   const [crewIndex, setCrewIndex] = useState(0);
@@ -34,11 +42,13 @@ export default function JobCommandApp() {
   );
   const [ticking, setTicking] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [propertyOpen, setPropertyOpen] = useState(false);
   const fieldDate = useLiveDate();
 
   const member = crew[crewIndex] ?? crew[0];
   const stack = useMemo(() => activeJobs(jobs), [jobs]);
   const selectedJob = stack[jobIndex] ?? null;
+  const property = member ? assignedJob(jobs, member) ?? selectedJob : null;
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -80,6 +90,21 @@ export default function JobCommandApp() {
     setCrew((current) => toggleCrewGps(current, member.id));
   }
 
+  function saveHours(schedule: DaySchedule[]) {
+    if (!member) return;
+    setCrew((current) => updateWeeklySchedule(current, member.id, schedule));
+    setDesk("crew");
+    setNotice(`Updated ${member.name.split(" ")[0]}'s weekly hours.`);
+  }
+
+  function openDirections() {
+    if (!property) {
+      setNotice("No active property locked to this crew.");
+      return;
+    }
+    setPropertyOpen(true);
+  }
+
   return (
     <main className={`app-shell theme-${role}`}>
       <div className="grain" />
@@ -109,6 +134,8 @@ export default function JobCommandApp() {
               onClick={() => {
                 setRole("employee");
                 setTab("command");
+                setDesk("crew");
+                setPropertyOpen(false);
               }}
             >
               EMPLOYEE
@@ -134,16 +161,28 @@ export default function JobCommandApp() {
         <EmployeeHome member={member} jobs={jobs} />
       )}
 
-      {role === "boss" && tab === "command" && member && (
+      {role === "boss" && tab === "command" && member && desk === "hours" && (
+        <EditHoursCalendar
+          member={member}
+          onSave={saveHours}
+          onCancel={() => setDesk("crew")}
+        />
+      )}
+
+      {role === "boss" && tab === "command" && member && desk === "crew" && (
         <section className="page crew-desk">
           <div className="crew-head">
             <p className="section-kicker">{fieldDate}</p>
             <h1>CREW</h1>
           </div>
+          <JobStatusRail jobs={jobs} />
           <CrewRolodex
             crew={crew}
             index={crewIndex}
+            property={property}
             onIndexChange={selectCrew}
+            onEditHours={() => setDesk("hours")}
+            onGetDirections={openDirections}
           />
           <JobTumbler
             jobs={jobs}
@@ -159,10 +198,13 @@ export default function JobCommandApp() {
             onToggleClock={toggleClock}
             onToggleGps={toggleGps}
           />
+          <CrewMap member={member} job={property} />
         </section>
       )}
 
-      {tab === "jobs" && (
+      {tab === "jobs" && role === "boss" && <BossJobsBoard jobs={jobs} />}
+
+      {tab === "jobs" && role === "employee" && (
         <section className="page stub-page">
           <p className="section-kicker">Jobs</p>
           <h1>
@@ -209,7 +251,10 @@ export default function JobCommandApp() {
             key={item.id}
             type="button"
             className={tab === item.id ? "selected" : ""}
-            onClick={() => setTab(item.id)}
+            onClick={() => {
+              setTab(item.id);
+              if (item.id !== "command") setDesk("crew");
+            }}
           >
             <span className="nav-icon" aria-hidden="true">
               {item.icon}
@@ -220,6 +265,13 @@ export default function JobCommandApp() {
       </nav>
 
       {notice && <div className="toast">{notice}</div>}
+      {propertyOpen && property && member && (
+        <PropertySheet
+          job={property}
+          member={member}
+          onClose={() => setPropertyOpen(false)}
+        />
+      )}
     </main>
   );
 }

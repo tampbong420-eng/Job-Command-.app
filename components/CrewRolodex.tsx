@@ -1,24 +1,40 @@
 "use client";
 
-import { clockLabel, initials, wrapIndex } from "@/lib/format";
-import type { CrewMember } from "@/lib/types";
+import { clockLabel, formatLiveHours, initials, wrapIndex } from "@/lib/format";
+import { scheduleOverview, WEEKDAY_SHORT } from "@/lib/schedule";
+import type { CrewMember, Job } from "@/lib/types";
+import { useLiveNow } from "@/lib/use-live-time";
 import { useSwipe } from "@/lib/use-swipe";
 
 export default function CrewRolodex({
   crew,
   index,
+  property,
   onIndexChange,
+  onEditHours,
+  onGetDirections,
 }: {
   crew: CrewMember[];
   index: number;
+  property: Job | null;
   onIndexChange: (index: number) => void;
+  onEditHours: () => void;
+  onGetDirections: () => void;
 }) {
   const member = crew[index];
+  const now = useLiveNow();
   const swipe = useSwipe((delta) => {
     onIndexChange(wrapIndex(index, delta, crew.length));
   }, "x", 72);
 
   if (!member) return null;
+
+  const onDuty = member.status !== "off";
+  const liveHours = !onDuty
+    ? `${member.weeklyHoursLogged}h logged`
+    : now === 0
+      ? "—"
+      : formatLiveHours(member.startedAt, now);
 
   return (
     <section
@@ -53,6 +69,49 @@ export default function CrewRolodex({
           {clockLabel(member.status)}
         </span>
       </div>
+
+      <div className="crew-card-meta">
+        <div className={`live-chip ${onDuty ? "on" : "off"}`}>
+          <p className="metric-label">Live hours</p>
+          <b>{liveHours}</b>
+        </div>
+        <div className="schedule-overview">
+          <p className="metric-label">Week</p>
+          <div className="week-strip" aria-hidden="true">
+            {member.weeklySchedule.map((day) => (
+              <span
+                key={day.day}
+                className={day.off ? "off" : "on"}
+                title={day.day}
+              >
+                {WEEKDAY_SHORT[day.day]}
+              </span>
+            ))}
+          </div>
+          <b>{scheduleOverview(member.weeklySchedule)}</b>
+        </div>
+      </div>
+
+      <div className="rolodex-actions">
+        <button
+          type="button"
+          className="ghost-action directions"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={onGetDirections}
+          disabled={!property}
+        >
+          Get Directions
+        </button>
+        <button
+          type="button"
+          className="ghost-action hours"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={onEditHours}
+        >
+          Edit Hours
+        </button>
+      </div>
+
       <p className="swipe-hint">Swipe crew</p>
       <div className="rolodex-dots">
         {crew.map((row, i) => (
