@@ -135,7 +135,7 @@ function seedIfEmpty(db: DatabaseSync): void {
   `).run(
     jobId,
     "AC no-cool",
-    "queued",
+    "assigned",
     alexId,
     "Maria Lopez",
     "650-555-0100",
