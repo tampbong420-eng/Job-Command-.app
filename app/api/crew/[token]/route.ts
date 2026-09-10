@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import {
   clockEmployee,
   getEmployeeByToken,
+  listCrewDirectory,
   pingEmployeeLocation,
 } from "@/lib/employees";
+import { getHoursSummary } from "@/lib/hours";
 import { listJobsForEmployee } from "@/lib/jobs";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +31,8 @@ export async function GET(
   return NextResponse.json({
     employee,
     jobs: listJobsForEmployee(employee.id),
+    crew: listCrewDirectory(employee.id),
+    hours: getHoursSummary(employee.id),
   });
 }
 
@@ -76,5 +80,7 @@ export async function PATCH(
   return NextResponse.json({
     employee: next,
     jobs: listJobsForEmployee(next.id),
+    crew: listCrewDirectory(next.id),
+    hours: getHoursSummary(next.id),
   });
 }

@@ -44,3 +44,16 @@ export type JobInput = {
   boss_notes?: string | null;
   required_supplies?: string | null;
 };
+
+export type CrewMember = {
+  id: string;
+  name: string;
+  role: string | null;
+  onClock: boolean;
+};
+
+export type HoursSummary = {
+  todaySeconds: number;
+  weekSeconds: number;
+  clockedInAt: string | null;
+};

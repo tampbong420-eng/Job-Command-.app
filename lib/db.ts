@@ -64,6 +64,17 @@ const SQLITE_ADDITIONS = [
     ON employees (unique_link_token)`,
 ];
 
+const TIME_ENTRIES_TABLE = `
+CREATE TABLE IF NOT EXISTS time_entries (
+  id TEXT PRIMARY KEY,
+  employee_id TEXT NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  clocked_in_at TEXT NOT NULL,
+  clocked_out_at TEXT
+);
+CREATE INDEX IF NOT EXISTS time_entries_employee_idx
+  ON time_entries (employee_id, clocked_in_at);
+`;
+
 function isIgnorableAlterError(message: string): boolean {
   const text = message.toLowerCase();
   return (
@@ -86,6 +97,7 @@ export function migrate(db: DatabaseSync): void {
       if (!isIgnorableAlterError(message)) throw error;
     }
   }
+  db.exec(TIME_ENTRIES_TABLE);
 }
 
 function seedIfEmpty(db: DatabaseSync): void {
@@ -98,7 +110,7 @@ function seedIfEmpty(db: DatabaseSync): void {
   const alexId = randomUUID();
   const samId = randomUUID();
   const jobId = randomUUID();
-  const address = "1600 Amphitheatre Parkway, Mountain View, CA";
+  const address = "123 Painted Post Rd, Hot Springs, AR";
 
   const insertEmployee = db.prepare(`
     INSERT INTO employees (
@@ -109,18 +121,18 @@ function seedIfEmpty(db: DatabaseSync): void {
 
   insertEmployee.run(
     alexId,
-    "Alex Rivera",
+    "Ricky",
     "Lead tech",
-    "813-555-0142",
+    "501-555-0142",
     newLinkToken(),
     now,
     now,
   );
   insertEmployee.run(
     samId,
-    "Sam Chen",
+    "Dina",
     "Crew",
-    "813-555-0198",
+    "501-555-0198",
     newLinkToken(),
     now,
     now,
@@ -134,15 +146,15 @@ function seedIfEmpty(db: DatabaseSync): void {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     jobId,
-    "AC no-cool",
+    "Northline Properties",
     "assigned",
     alexId,
-    "Maria Lopez",
-    "650-555-0100",
+    "John Doe",
+    "501-555-0192",
     address,
     resolveStreetViewUrl(address, null),
-    "Customer said the upstairs rooms never drop below 78. Check the condensate line before swapping parts.",
-    "14-3 filter, nitrogen, capacitor kit, wet/dry vac",
+    "Make sure drop cloths cover all perimeter landscaping. Use exterior grade primer on south-facing trim.",
+    "2x Graco TrueCoat 360, 5 gal Exterior Satin White, 3x Blue Tape rolls, Ladder stabilizer.",
     now,
     now,
   );

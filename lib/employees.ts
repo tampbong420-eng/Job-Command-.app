@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { getDb, newLinkToken, toBool, toNum, toStr } from "./db";
-import type { Employee, EmployeeInput } from "./types";
+import { startTimeEntry, stopOpenTimeEntry } from "./hours";
+import type { CrewMember, Employee, EmployeeInput } from "./types";
 
 type EmployeeRow = Record<string, unknown>;
 
@@ -143,11 +144,31 @@ export function clockEmployee(
   onClock: boolean,
   coords?: { lat?: number | null; lng?: number | null },
 ): Employee | undefined {
+  const current = getEmployee(id);
+  if (!current) return undefined;
+
+  if (onClock && !current.is_on_clock) {
+    startTimeEntry(id);
+  } else if (!onClock && current.is_on_clock) {
+    stopOpenTimeEntry(id);
+  }
+
   return updateEmployee(id, {
     is_on_clock: onClock,
     current_lat: onClock ? (coords?.lat ?? null) : null,
     current_lng: onClock ? (coords?.lng ?? null) : null,
   });
+}
+
+export function listCrewDirectory(excludeId?: string): CrewMember[] {
+  return listEmployees()
+    .filter((employee) => employee.id !== excludeId)
+    .map((employee) => ({
+      id: employee.id,
+      name: employee.name,
+      role: employee.role,
+      onClock: employee.is_on_clock,
+    }));
 }
 
 export function pingEmployeeLocation(

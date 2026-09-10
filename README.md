@@ -10,7 +10,7 @@ Postgres DDL lives in `db/`:
 
 - `db/schema.sql` — full `employees` and `jobs` tables
 - `db/migrations/001_create_employees_and_jobs.sql` — base tables
-- `db/migrations/002_employee_job_additions.sql` — column additions
+- `db/migrations/003_time_entries.sql` — clock session hours
 
 Employee columns added:
 
@@ -36,8 +36,13 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) for the boss desk.
-Copy an employee login link (`/e/<unique_link_token>`) to open that tech’s
-clock and job list.
+Copy an employee login link (`/e/<unique_link_token>`) to open the restricted
+employee portal (`components/JobCommandApp.jsx`):
+
+- Glowing orange clock-out / green clock-in status
+- Today’s shift, hours, boss notes, and truck supplies
+- On-clock-only crew paging directory
+- Jobs and profile tabs only — no boss-desk admin
 
 ## Common commands
 
@@ -61,7 +66,7 @@ clock and job list.
 | POST   | `/api/jobs`                  | Create a customer job                            |
 | PATCH  | `/api/jobs/:id`              | Update job fields                                |
 | DELETE | `/api/jobs/:id`              | Delete job                                       |
-| GET    | `/api/crew/:token`           | Employee desk by unique link                     |
+| GET    | `/api/crew/:token`           | Employee desk: job packet, crew directory, hours |
 | PATCH  | `/api/crew/:token`           | `clock_in`, `clock_out`, or `location` GPS ping  |
 
 ## Cloud Agent environment
