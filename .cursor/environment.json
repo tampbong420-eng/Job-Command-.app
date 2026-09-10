@@ -1,6 +1,6 @@
 {
   "name": "Job Command",
-  "install": "npm ci",
+  "install": "npm install",
   "terminals": [
     {
       "name": "dev",
