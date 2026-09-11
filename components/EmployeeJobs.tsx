@@ -62,7 +62,7 @@ export default function EmployeeJobs({
               </a>
               <button
                 type="button"
-                className="lane-button tone-done"
+                className="ghost-action hours"
                 onClick={() => onStatus(job.id, "completed")}
               >
                 Finished
