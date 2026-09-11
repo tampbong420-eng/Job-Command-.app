@@ -199,26 +199,30 @@ export function applyCommand(
     };
   }
 
-  const status = command.status ?? "lead";
-  const job: Job = {
-    id: `c-${command.customerName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.parse(now)}`,
-    customerName: command.customerName,
-    phone: command.phone ?? "",
-    address: command.address ?? "",
-    jobTitle: command.jobTitle ?? "New work",
-    status,
-    scheduledTime: "TBD",
-    worker: "Unassigned",
-    workerId: null,
-    priority: "medium",
-    lat: null,
-    lng: null,
-  };
-  return {
-    state: { ...state, jobs: [job, ...state.jobs] },
-    view: "jobs",
-    notice: `Added ${job.customerName} as ${status === "lead" ? "a new lead" : jobTitleStatus(status)}.`,
-  };
+  if (command.type === "create_job") {
+    const status = command.status ?? "lead";
+    const job: Job = {
+      id: `c-${command.customerName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.parse(now)}`,
+      customerName: command.customerName,
+      phone: command.phone ?? "",
+      address: command.address ?? "",
+      jobTitle: command.jobTitle ?? "New work",
+      status,
+      scheduledTime: "TBD",
+      worker: "Unassigned",
+      workerId: null,
+      priority: "medium",
+      lat: null,
+      lng: null,
+    };
+    return {
+      state: { ...state, jobs: [job, ...state.jobs] },
+      view: "jobs",
+      notice: `Added ${job.customerName} as ${status === "lead" ? "a new lead" : jobTitleStatus(status)}.`,
+    };
+  }
+
+  return { state, view: null, notice: "Nothing to file." };
 }
 
 function jobTitleStatus(status: JobStatus): string {

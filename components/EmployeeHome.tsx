@@ -1,28 +1,40 @@
 "use client";
 
+import { assignedJob, onClockCrew } from "@/lib/assign";
+import { clockLabel, formatLiveHours } from "@/lib/format";
+import { scheduleOverview } from "@/lib/schedule";
 import type { CrewMember, Job } from "@/lib/types";
-import { useLiveClockTime, useLiveDate, useLiveGreeting } from "@/lib/use-live-time";
-import { useMemo, useState } from "react";
+import { useLiveClockTime, useLiveDate, useLiveGreeting, useLiveNow } from "@/lib/use-live-time";
+import { useMemo } from "react";
 
 export default function EmployeeHome({
   member,
+  crew,
   jobs,
+  onToggleClock,
+  onDirections,
 }: {
   member: CrewMember;
+  crew: CrewMember[];
   jobs: Job[];
+  onToggleClock: () => void;
+  onDirections: (job: Job) => void;
 }) {
-  const [onClock, setOnClock] = useState(member.status === "active");
   const date = useLiveDate();
   const hello = useLiveGreeting();
   const since = useLiveClockTime(member.startedAt);
-  const firstStop = useMemo(() => {
-    return (
-      jobs.find((job) => job.id === member.currentJobId) ??
-      jobs.find((job) => job.workerId === member.id && job.status === "in_progress") ??
-      jobs.find((job) => job.status === "in_progress") ??
-      null
-    );
-  }, [jobs, member]);
+  const now = useLiveNow();
+  const onClock = member.status !== "off";
+  const job = assignedJob(jobs, member);
+  const live = !onClock
+    ? `${member.weeklyHoursLogged}h this week`
+    : now === 0
+      ? "—"
+      : formatLiveHours(member.startedAt, now);
+  const others = useMemo(
+    () => onClockCrew(crew).filter((row) => row.id !== member.id),
+    [crew, member.id],
+  );
 
   return (
     <section className="page">
@@ -35,9 +47,9 @@ export default function EmployeeHome({
             <strong>{(member.name.split(" ")[0] ?? "Crew").toUpperCase()}.</strong>
           </h1>
         </div>
-        <div className={`status-pill ${onClock ? "active" : ""}`}>
+        <div className={`status-pill ${member.status}`}>
           <span className="status-dot" />
-          {onClock ? "ON THE CLOCK" : "OFF THE CLOCK"}
+          {clockLabel(member.status)}
         </div>
       </div>
 
@@ -52,7 +64,7 @@ export default function EmployeeHome({
               {onClock ? `Active since ${since}` : "Not started yet"}
             </p>
           </div>
-          <span className="shift-tag">{onClock ? "ACTIVE" : "READY"}</span>
+          <span className="shift-tag">{onClock ? "LIVE" : "READY"}</span>
         </div>
         <div className="shift-line">
           <span />
@@ -60,12 +72,12 @@ export default function EmployeeHome({
           <span />
         </div>
         <div className="shift-foot">
-          <span>First stop</span>
-          <strong>
-            {firstStop
-              ? `${firstStop.scheduledTime} · ${firstStop.customerName}`
-              : "No jobs queued"}
-          </strong>
+          <span>Live hours</span>
+          <strong>{live}</strong>
+        </div>
+        <div className="shift-foot">
+          <span>Week</span>
+          <strong>{scheduleOverview(member.weeklySchedule)}</strong>
         </div>
       </article>
 
@@ -75,29 +87,50 @@ export default function EmployeeHome({
             ◎
           </div>
           <div>
-            <p className="card-label">Live GPS</p>
-            <p className={`gps-line ${onClock ? "live" : ""}`}>
-              {onClock
-                ? "Sharing live · stay on this job until clock out"
-                : "Off the clock — location is not shared"}
+            <p className="card-label">Assigned job</p>
+            <p className={`gps-line ${job ? "live" : ""}`}>
+              {job
+                ? `${job.scheduledTime} · ${job.customerName}`
+                : "No active job locked to you"}
             </p>
+            {job && <p className="board-copy tight">{job.address}</p>}
           </div>
         </div>
+        {job && (
+          <button
+            type="button"
+            className="ghost-action directions job-go"
+            onClick={() => onDirections(job)}
+          >
+            Get Directions
+          </button>
+        )}
       </article>
+
+      {onClock && others.length > 0 && (
+        <article className="plate crew-page">
+          <p className="card-label">On-clock crew</p>
+          {others.map((row) => (
+            <div key={row.id} className="page-row">
+              <span>
+                {row.name}
+                <small>{row.role}</small>
+              </span>
+              <a className="ghost-action" href={`tel:${row.phone}`}>
+                Call
+              </a>
+            </div>
+          ))}
+        </article>
+      )}
 
       <button
         type="button"
-        className={`command-button clock-button${onClock ? " clocked" : ""}`}
-        onClick={() => setOnClock((value) => !value)}
+        className={`clock-tile ${onClock ? "in" : "out"}`}
+        aria-pressed={onClock}
+        onClick={onToggleClock}
       >
-        <span className="button-icon" aria-hidden="true">
-          ◷
-        </span>
-        <span className="button-copy">
-          <small>{onClock ? "Shift active" : "Start your shift"}</small>
-          <b>{onClock ? "Clock out" : "Clock in"}</b>
-        </span>
-        <span className="button-arrow">↗</span>
+        {onClock ? "Clocked In" : "Clocked Out"}
       </button>
     </section>
   );

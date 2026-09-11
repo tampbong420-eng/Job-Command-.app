@@ -4,6 +4,8 @@ import {
   lockJobToCrew,
   activeJobs,
   assignedJob,
+  employeeJobs,
+  onClockCrew,
   tumblerIndexForCrew,
   toggleCrewClock,
   toggleCrewGps,
@@ -219,4 +221,20 @@ test("updateWeeklySchedule writes hours onto one crew card", () => {
   const updated = updateWeeklySchedule(crew, "e-mike", next);
   assert.equal(updated.find((row) => row.id === "e-mike")?.weeklySchedule[1].start, "09:00");
   assert.equal(updated.find((row) => row.id === "e-dana")?.weeklySchedule[0].start, "08:00");
+});
+
+test("employeeJobs lists open stops locked to that worker", () => {
+  assert.deepEqual(
+    employeeJobs(jobs, "e-mike").map((job) => job.id),
+    ["c-northline"],
+  );
+  assert.equal(employeeJobs(jobs, "e-mike").some((job) => job.id === "c-done"), false);
+});
+
+test("onClockCrew hides people who are clocked out", () => {
+  const mixed = toggleCrewClock(crew, "e-dana");
+  assert.deepEqual(
+    onClockCrew(mixed).map((row) => row.id),
+    ["e-mike"],
+  );
 });

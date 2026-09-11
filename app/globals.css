@@ -1643,3 +1643,147 @@ button.metric.toggle {
 .talk-backdrop {
   z-index: 9;
 }
+
+.clock-tile {
+  width: 100%;
+  min-height: 72px;
+  margin-top: 16px;
+  border-radius: 18px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.clock-tile.out {
+  background: #ff7700;
+  color: #1c1008;
+  box-shadow: 0 0 24px #ff770066;
+}
+
+.clock-tile.in {
+  background: #00ff66;
+  color: #052e16;
+  box-shadow: 0 0 28px #00ff6680;
+}
+
+.job-go {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.page-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #ffffff12;
+}
+
+.page-row small {
+  display: block;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.page-row .ghost-action {
+  min-width: 72px;
+  min-height: 36px;
+}
+
+.board-copy.tight {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+.paper-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid var(--line-soft);
+  background: #09090b;
+}
+
+.paper-nav button {
+  min-height: 40px;
+  border-radius: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.paper-nav button.on {
+  background: var(--boss-grad);
+  color: #052e16;
+}
+
+.add-customer {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.add-customer-form {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.add-customer-form label,
+.settings-field {
+  display: grid;
+  gap: 4px;
+  color: var(--yellow);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 10px;
+}
+
+.add-customer-form input,
+.settings-field input {
+  background: #09090b;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--ink);
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.settings-card,
+.profile-card {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-card {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-toggle {
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.identity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}

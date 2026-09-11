@@ -118,3 +118,13 @@ export function updateWeeklySchedule(
     row.id === employeeId ? { ...row, weeklySchedule } : row,
   );
 }
+
+export function employeeJobs(jobs: Job[], employeeId: string): Job[] {
+  return jobs.filter(
+    (job) => job.workerId === employeeId && job.status !== "completed",
+  );
+}
+
+export function onClockCrew(crew: CrewMember[]): CrewMember[] {
+  return crew.filter((row) => row.status !== "off");
+}

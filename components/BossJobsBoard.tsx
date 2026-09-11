@@ -3,6 +3,7 @@
 import CustomerCard from "@/components/CustomerCard";
 import { jobStatusLabel, jobTone } from "@/lib/format";
 import type { Estimate, Job, JobStatus, TimeCard } from "@/lib/types";
+import type { ReactNode } from "react";
 
 const GROUPS: JobStatus[] = ["lead", "pending", "in_progress", "completed"];
 
@@ -14,6 +15,7 @@ export default function BossJobsBoard({
   onDelete,
   onOpenEstimates,
   onOpenTimeCards,
+  children,
 }: {
   jobs: Job[];
   estimates: Estimate[];
@@ -22,6 +24,7 @@ export default function BossJobsBoard({
   onDelete: (jobId: string) => void;
   onOpenEstimates: (jobId: string) => void;
   onOpenTimeCards: (jobId: string) => void;
+  children?: ReactNode;
 }) {
   return (
     <section className="page jobs-board">
@@ -35,6 +38,7 @@ export default function BossJobsBoard({
         Tap New lead, Pending, Active, Finished, or Delete on a card. Talk can
         file estimates and time cards into the same customer.
       </p>
+      {children}
       {GROUPS.map((status) => {
         const rows = jobs.filter((job) => job.status === status);
         return (

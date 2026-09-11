@@ -1,16 +1,20 @@
 import type { CrewMember, Estimate, Job, TimeCard } from "@/lib/types";
+import type { ReactNode } from "react";
 
 export default function EstimatesBoard({
   jobs,
   estimates,
   onBack,
+  children,
 }: {
   jobs: Job[];
   estimates: Estimate[];
   onBack?: () => void;
+  children?: ReactNode;
 }) {
   return (
     <section className="page jobs-board">
+      {children}
       {onBack && (
         <button type="button" className="text-back" onClick={onBack}>
           ← Cards
@@ -52,14 +56,17 @@ export function TimeCardsBoard({
   jobs,
   timeCards,
   onBack,
+  children,
 }: {
   crew: CrewMember[];
   jobs: Job[];
   timeCards: TimeCard[];
   onBack?: () => void;
+  children?: ReactNode;
 }) {
   return (
     <section className="page jobs-board">
+      {children}
       {onBack && (
         <button type="button" className="text-back" onClick={onBack}>
           ← Cards
