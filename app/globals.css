@@ -1,4 +1,16 @@
 :root {
+  --bg: #0b1020;
+  --bg-elev: #141b2f;
+  --bg-elev-2: #1b2440;
+  --border: #26304d;
+  --text: #e8ecf6;
+  --text-dim: #9aa5c0;
+  --accent: #5b8cff;
+  --accent-strong: #3a6bff;
+  --green: #34d399;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --radius: 12px;
   --metal-0: #09090b;
   --metal-1: #18181b;
   --metal-2: #27272a;
