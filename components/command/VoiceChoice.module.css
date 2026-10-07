@@ -1,0 +1,43 @@
+.wrap {
+  display: grid;
+  gap: 8px;
+}
+
+/* Colors come from the shared .choice-row skin rules, so every look matches. Size only here. */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+}
+
+.wrap .row .pick {
+  min-height: 56px;
+  padding: 12px 14px;
+  font-family: var(--font-sans, Inter, Helvetica, Arial, sans-serif);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(201, 162, 39, 0.28);
+}
+
+/* Default look: gold like Customer payments. Skins with their own .choice-row .on win. */
+.wrap .row .pick.on {
+  background: #c9a227;
+  color: #0d0d0d;
+  border: 2px solid #0d0d0d;
+}
+
+.wrap .row .pick.on::after {
+  content: " ✓";
+  font-weight: 800;
+}
+
+.blurb {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}

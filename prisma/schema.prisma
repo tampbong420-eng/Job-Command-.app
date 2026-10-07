@@ -1,0 +1,652 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite is the zero-config local engine. Switch `provider` to
+// "postgresql" and point DATABASE_URL at Postgres for production.
+
+model Employee {
+  id                   String        @id @default(cuid())
+  firstName            String
+  lastName             String
+  jobTitle             String
+  photoUrl             String?
+  email                String?
+  phone                String?
+  payType              String        @default("HOURLY") // HOURLY | SALARY
+  hourlyRate           Float         @default(0)
+  salaryAnnual         Float         @default(0)
+  baselineStartDate    DateTime
+  payFrequency         String        @default("WEEKLY") // WEEKLY | BIWEEKLY | ROLLING_3_WEEK
+  federalWithholdPct   Float         @default(12)
+  stateWithholdPct     Float         @default(5)
+  payMethod            String        @default("") // W2 | CASH
+  filingStatus         String        @default("") // SINGLE | MARRIED | MARRIED_SEPARATE | HEAD | EXEMPT
+  allowances           Int           @default(0)
+  onboardedAt          DateTime?
+  employmentStatus     String        @default("ACTIVE") // ACTIVE | TEMPORARY | QUIT | FIRED | LEAVE
+  employmentEndDate    DateTime?
+  depositRouting       String        @default("")
+  depositAccount       String        @default("")
+  depositAccountType   String        @default("CHECKING") // CHECKING | SAVINGS
+  ytdGross             Float         @default(0)
+  ytdFederalTax        Float         @default(0)
+  ytdStateTax          Float         @default(0)
+  ytdNet               Float         @default(0)
+  ytdOvertime          Float         @default(0)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  timeEntries          TimeEntry[]
+  payPeriods           PayPeriod[]
+  adjustments          PayAdjustment[]
+  auditLogs            AuditLog[]
+  account              Account?
+  ping                 CrewPing?
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model AppSettings {
+  id                   String   @id @default("default")
+  payFrequency         String   @default("WEEKLY") // WEEKLY | BIWEEKLY
+  periodAnchor         DateTime
+  setupComplete        Boolean  @default(false)
+  pinGateDisabled      Boolean  @default(false)
+  ownerFirstName       String   @default("")
+  ownerLastName        String   @default("")
+  ownerEmail           String   @default("")
+  ownerPhone           String   @default("")
+  businessName         String   @default("")
+  businessAddress      String   @default("")
+  businessEmail        String   @default("")
+  industry             String   @default("")
+  businessSize         String   @default("")
+  acceptCard           Boolean  @default(true)
+  acceptAch            Boolean  @default(false)
+  acceptCash           Boolean  @default(true)
+  depositPercent       Int      @default(0)
+  accountingSoftware   String   @default("NONE") // QUICKBOOKS | XERO | OTHER | NONE
+  companyPhone         String   @default("")
+  answeringLine        String   @default("")
+  logoUrl              String?
+  quietStart           String   @default("19:00")
+  quietEnd             String   @default("07:00")
+  vapidPublic          String   @default("")
+  vapidPrivate         String   @default("")
+  trialStartedAt       DateTime?
+  trialEndsAt          DateTime?
+  billingStatus        String   @default("none") // none | trial | active | past_due | canceled | expired
+  stripeCustomerId     String   @default("")
+  stripeSubId          String   @default("")
+  stripeAddonSubId     String   @default("")
+  addonStatus          String   @default("locked") // locked | active | canceled
+  cardBrand            String   @default("")
+  cardLast4            String   @default("")
+  connectAccountId     String   @default("")
+  connectStatus        String   @default("unlinked") // unlinked | pending | complete
+  connectBankLast4     String   @default("")
+  // --- $1 card check + trial guard (signup) ---
+  cardCheckAt          DateTime? // last passing $1 hold (released right away)
+  cardCheckToken       String   @default("") // one-use token the signup finish must present
+  cardCheckPm          String   @default("") // saved default card (pm_...) or mock_pm_...
+  cardCheckFingerprint String   @default("") // HMAC of the card fingerprint, never the card
+  trialGuard           String   @default("") // "" | ok | flagged | blocked (+ reasons in AuditLog)
+  trialReminderSentAt  DateTime? // trial-ends-in-3-days email/banner sent
+  billingCheckedAt     DateTime? // last on-demand Stripe re-check
+  planInterval         String   @default("") // "" | month | year (base plan, from Stripe/checkout)
+  renewsAt             DateTime? // next base-plan renewal (Stripe current_period_end)
+  renewalReminderAt    DateTime? // yearly plan: 30-days-before-renewal email sent
+  termsAcceptedAt      DateTime?
+  termsVersion         String   @default("")
+  estimatePrompt       String   @default("")
+  shellTheme           String   @default("ink") // ink (Lime Industrial, default) | light | auto
+  shellInk             String   @default("")
+  // --- signup v2 (trade profile) ---
+  tradeLabel           String   @default("") // typed trade when industry = Other
+  services             String   @default("") // JSON string[] of service tile ids
+  serviceRadiusMi      Int      @default(30)
+  workDays             String   @default("MON_FRI") // MON_FRI | MON_SAT | EVERY_DAY
+  workStart            String   @default("07:00")
+  workEnd              String   @default("17:00")
+  laborRate            Float    @default(0) // main rate, in the trade profile's unit
+  materialsMarkup      Int      @default(20)
+  estimateValidDays    Int      @default(30)
+  tradeDefaults        String   @default("") // JSON { choice, extras } from the trade profile
+  licenseNumber        String   @default("")
+  insuranceCarrier     String   @default("")
+  laterDone            String   @default("") // JSON string[] of finished "finish later" items
+  reviewLink           String   @default("") // Google review link, sent after the first paid job
+  recoveryEmail        String   @default("") // Forgot PIN: backup email (owner email = ownerEmail)
+  // --- end signup v2 ---
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Boss {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  phone        String?
+  email        String?
+  isOwner      Boolean  @default(false)
+  hasAppAccess Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model Customer {
+  id         String          @id @default(cuid())
+  name       String
+  phone      String          @default("")
+  email      String          @default("")
+  address    String          @default("")
+  invoices   Invoice[]
+  estimates  Estimate[]
+  jobs       Job[]
+  deliveries DeliveryEvent[]
+  createdAt  DateTime        @default(now())
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model Invoice {
+  id                   String    @id @default(cuid())
+  number               String
+  customerId           String
+  jobId                String?
+  amount               Float
+  status               String    @default("PENDING") // DRAFT | PENDING | PAID
+  dueDate              DateTime
+  notes                String    @default("")
+  terms                String    @default("Payment due upon completion. Net 15.")
+  taxRate              Float     @default(0)
+  sentAt               DateTime?
+  paidAt               DateTime?
+  publicToken          String?   @unique
+  payUrl               String    @default("")
+  stripeSessionId      String    @default("")
+  stripePaymentIntent  String    @default("")
+  applicationFee       Float     @default(0)
+  createdAt            DateTime  @default(now())
+  customer             Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  job                  Job?      @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  lines                DocLine[]
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+  @@unique([shopId, number])
+}
+
+model Estimate {
+  id             String    @id @default(cuid())
+  number         String
+  jobId          String    @unique
+  customerId     String?
+  status         String    @default("DRAFT") // DRAFT | SENT | VIEWED | ACCEPTED | CHANGES
+  notes          String    @default("")
+  terms          String    @default("This estimate is valid for 30 days.")
+  taxRate        Float     @default(0)
+  publicToken    String?   @unique
+  sentAt         DateTime?
+  viewedAt       DateTime?
+  acceptedAt     DateTime?
+  changesAt      DateTime?
+  signedName     String    @default("")
+  clientNote     String    @default("")
+  sentEmail      Boolean   @default(false)
+  sentSms        Boolean   @default(false)
+  lastFollowUpAt DateTime?
+  followUpCount  Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  job            Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  customer       Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  lines          DocLine[]
+  deliveries     DeliveryEvent[]
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+  @@unique([shopId, number])
+}
+
+model DeliveryEvent {
+  id         String    @id @default(cuid())
+  estimateId String
+  customerId String?
+  channel    String    // email | sms | link
+  status     String    // queued | sent | delivered | opened | viewed | failed
+  provider   String    @default("mock") // resend | twilio | mock | job-command
+  providerId String    @default("")
+  toAddress  String    @default("")
+  actor      String    @default("")
+  createdAt  DateTime  @default(now())
+  estimate   Estimate  @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([estimateId, createdAt])
+  @@index([customerId, createdAt])
+  @@index([provider, providerId])
+  @@index([shopId])
+}
+
+model DocLine {
+  id          String    @id @default(cuid())
+  estimateId  String?
+  invoiceId   String?
+  kind        String    @default("OTHER") // LABOR | MATERIAL | OTHER
+  description String
+  quantity    Float     @default(1)
+  unit        String    @default("ea")
+  rate        Float     @default(0)
+  sortOrder   Int       @default(0)
+  /** Good/better/best tier (Eric, 2026-10-03): "" = untiered, or "good" | "better" | "best". */
+  tier        String    @default("")
+  estimate    Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model Job {
+  id           String      @id @default(cuid())
+  code         String
+  name         String
+  client       String
+  customerId   String?
+  address      String      @default("")
+  notes        String      @default("")
+  timeline     String      @default("")
+  dueDate      DateTime?
+  pipeline     Int         @default(0)
+  leadCalledAt DateTime?
+  prepChecklist String     @default("{}")
+  timeEntries  TimeEntry[]
+  invoices     Invoice[]
+  estimate     Estimate?
+  photos       JobPhoto[]
+  jobCost      JobCost?
+  adjustments  PayAdjustment[]
+  customer     Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  pings        CrewPing[]
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([customerId])
+  @@index([shopId])
+  @@unique([shopId, code])
+}
+
+model JobPhoto {
+  id        String   @id @default(cuid())
+  jobId     String
+  url       String
+  caption   String   @default("")
+  createdAt DateTime @default(now())
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+  // Smart Job Photos fields (Phase 1)
+  latitude   Float?   // GPS latitude where photo was taken
+  longitude  Float?   // GPS longitude where photo was taken
+  takenBy    String?  // Technician/user ID who took the photo
+  category   String?  // Manual category: before/after/damage/equipment/materials/documents/other
+  aiCategory String?  // AI-suggested category
+  aiConfidence Float? // AI confidence score (0-1)
+  equipmentId String? // Linked equipment record ID
+  ocrText    String?  // OCR-extracted text (serial numbers, etc.)
+  isBlurry   Boolean  @default(false) // AI-detected blurry/low quality
+  isDuplicate Boolean @default(false) // AI-detected duplicate
+
+  @@index([jobId, createdAt])
+  @@index([shopId])
+  @@index([category])
+  @@index([equipmentId])
+}
+
+model Receipt {
+  id        String   @id @default(cuid())
+  url       String
+  note      String   @default("Receipt")
+  takenAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model ServiceCode {
+  id          String      @id @default(cuid())
+  code        String
+  name        String
+  className   String
+  timeEntries TimeEntry[]
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+  @@unique([shopId, code])
+}
+
+model TimeEntry {
+  id             String       @id @default(cuid())
+  employeeId     String
+  date           DateTime
+  scheduledHours Float        @default(0)
+  actualHours    Float        @default(0)
+  clockIn        DateTime?
+  clockOut       DateTime?
+  scheduledStart String?
+  scheduledEnd   String?
+  status         String       @default("SCHEDULED")
+  jobId          String?
+  /// JOB | ESTIMATE. "" = untagged older row: read as the job's lit stage (stage 2 = ESTIMATE).
+  kind           String       @default("")
+  serviceCodeId  String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  job            Job?         @relation(fields: [jobId], references: [id])
+  serviceCode    ServiceCode? @relation(fields: [serviceCodeId], references: [id])
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([employeeId, date])
+  @@index([employeeId, date, jobId])
+  @@index([shopId])
+}
+
+model PayPeriod {
+  id             String          @id @default(cuid())
+  employeeId     String
+  startDate      DateTime
+  endDate        DateTime
+  frequency      String
+  regularHours   Float           @default(0)
+  overtimeHours  Float           @default(0)
+  regularPay     Float           @default(0)
+  overtimePay    Float           @default(0)
+  grossPay       Float           @default(0)
+  deductions     Float           @default(0)
+  reimbursements Float           @default(0)
+  federalTax     Float           @default(0)
+  stateTax       Float           @default(0)
+  netPay         Float           @default(0)
+  status         String          @default("OPEN") // OPEN | PENDING_APPROVAL | APPROVED | PAID | LOCKED
+  approvedBy     String?
+  approvedAt     DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  employee       Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  adjustments    PayAdjustment[]
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@unique([employeeId, startDate, endDate])
+  @@index([employeeId, startDate])
+  @@index([shopId])
+}
+
+model PayAdjustment {
+  id          String     @id @default(cuid())
+  employeeId  String
+  payPeriodId String?
+  jobId       String?
+  type        String // DEDUCTION | REIMBURSEMENT
+  category    String // TOOL_ALLOWANCE | UNIFORM | MATERIALS | OTHER
+  description String
+  amount      Float
+  createdAt   DateTime   @default(now())
+  employee    Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  payPeriod   PayPeriod? @relation(fields: [payPeriodId], references: [id], onDelete: SetNull)
+  job         Job?       @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model JobCost {
+  jobId             String   @id
+  laborHoursBudget  Float    @default(0)
+  laborHoursActual  Float    @default(0)
+  laborCostBudget   Float    @default(0)
+  laborCostActual   Float    @default(0)
+  materialBudget    Float    @default(0)
+  materialActual    Float    @default(0)
+  otherBudget       Float    @default(0)
+  otherActual       Float    @default(0)
+  revenue           Float    @default(0)
+  grossProfit       Float    @default(0)
+  laborMargin       Float    @default(0)
+  netMargin         Float    @default(0)
+  overLabor         Boolean  @default(false)
+  overMaterial      Boolean  @default(false)
+  learned           Boolean  @default(false)
+  computedAt        DateTime @default(now())
+  job               Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+model PriceMemory {
+  key         String   @id
+  avgRate     Float    @default(0)
+  sampleCount Int      @default(0)
+  updatedAt   DateTime @updatedAt
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+/// One free trial per business. Values are salted HMAC hashes, never the raw card/phone/email.
+model TrialClaim {
+  id        String   @id @default(cuid())
+  kind      String // CARD | PHONE | EMAIL | BUSINESS | DEVICE
+  valueHash String
+  outcome   String   @default("trial") // trial | flagged | blocked
+  createdAt DateTime @default(now())
+
+  @@unique([kind, valueHash])
+  @@index([valueHash])
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  employeeId String?
+  actor      String
+  action     String
+  field      String?
+  oldValue   String?
+  newValue   String?
+  createdAt  DateTime  @default(now())
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([employeeId, createdAt])
+  @@index([shopId])
+}
+
+model Alert {
+  id         String    @id @default(cuid())
+  kind       String
+  priority   String    @default("normal")
+  title      String
+  body       String
+  href       String    @default("/")
+  jobId      String?
+  employeeId String?
+  readAt     DateTime?
+  heldUntil  DateTime?
+  pushedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([createdAt])
+  @@index([heldUntil, readAt])
+  @@index([shopId])
+}
+
+model Account {
+  id           String    @id @default(cuid())
+  role         String    @default("CREW") // ADMIN | CREW
+  name         String
+  pinHash      String
+  username     String?   @unique
+  passwordHash String    @default("")
+  employeeId   String?   @unique
+  inviteToken  String?   @unique
+  pinMustChange Boolean  @default(false) // office reset this PIN: ask them to pick their own
+  createdAt    DateTime  @default(now())
+  employee     Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([role])
+  @@index([shopId])
+}
+
+model CrewPing {
+  employeeId String   @id
+  jobId      String?
+  lat        Float
+  lng        Float
+  accuracy   Float    @default(0)
+  at         DateTime @default(now())
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  job        Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([jobId, at])
+  @@index([shopId])
+}
+
+model PushDevice {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  role      String   @default("office")
+  createdAt DateTime @default(now())
+  shopId       String   @default("default") // multi-shop: AppSettings.id of the owning shop
+
+  @@index([shopId])
+}
+
+// ---- AI call answering (Retell) — additive tables only. shopId is ready for multi-shop (today every row is "default"). ----
+
+/// One row per shop: answering on/off, phone voice, who goes to estimates, Retell ids, minute cap.
+model AnsweringSettings {
+  id              String    @id @default(cuid())
+  shopId          String    @unique @default("default")
+  enabled         Boolean   @default(true)
+  voice           String    @default("male") // male | female (phone agent voice)
+  estimatorId     String    @default("") // Employee who goes to estimate visits ("" = first active)
+  estimateMinutes Int       @default(60)
+  bufferMinutes   Int       @default(30) // drive time kept clear before and after a visit
+  minutesCap      Int       @default(200) // $59/mo add-on includes 200 AI minutes
+  retellAgentId   String    @default("")
+  retellLlmId     String    @default("")
+  retellNumber    String    @default("") // E.164 of the Retell number (the new local 501 line)
+  connectedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+/// One answered call = one Call Card for the boss (summary, transcript, recording, booked time, Call Back).
+model CallCard {
+  id            String    @id @default(cuid())
+  shopId        String    @default("default")
+  retellCallId  String    @unique
+  agentId       String    @default("")
+  fromNumber    String    @default("")
+  toNumber      String    @default("")
+  mode          String    @default("full") // full = can book | message = take a message only (cap hit / add-on off / AI off)
+  status        String    @default("ringing") // ringing | live | ended | analyzed
+  outcome       String    @default("NEW") // NEW | BOOKED | MESSAGE | NO_BOOKING | SPAM
+  callerName    String    @default("")
+  callerPhone   String    @default("")
+  address       String    @default("")
+  jobType       String    @default("")
+  details       String    @default("")
+  preferredTime String    @default("")
+  urgency       String    @default("normal")
+  summary       String    @default("")
+  transcript    String    @default("[]") // JSON [{ role: "agent" | "user", text }]
+  recordingUrl  String    @default("")
+  endReason     String    @default("")
+  startedAt     DateTime?
+  endedAt       DateTime?
+  durationSec   Int       @default(0)
+  meteredMonth  String    @default("") // YYYY-MM once its seconds are counted (idempotent metering)
+  customerId    String?
+  jobId         String?
+  timeEntryId   String?
+  bookedDate    String    @default("") // YYYY-MM-DD shop day
+  bookedStart   String    @default("") // HH:MM
+  bookedEnd     String    @default("")
+  alertId       String?
+  reviewedAt    DateTime?
+  simulated     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([shopId, createdAt])
+}
+
+/// AI minutes per shop per month (shop calendar), for the 200-minute cap.
+model AnsweringUsage {
+  id           String   @id @default(cuid())
+  shopId       String   @default("default")
+  month        String // YYYY-MM
+  seconds      Int      @default(0)
+  calls        Int      @default(0)
+  messageCalls Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([shopId, month])
+}
+
+/// Database guard so two callers at once can never get the same estimate slot.
+model AnsweringSlotLock {
+  id         String   @id @default(cuid())
+  shopId     String   @default("default")
+  employeeId String
+  date       String // YYYY-MM-DD
+  start      String // HH:MM
+  callId     String
+  createdAt  DateTime @default(now())
+
+  @@unique([shopId, employeeId, date, start])
+}
+
+/// Server-side PIN lockout (go-public B1). key = "<shopId>|ip:<ip>" (5 wrong → 5 min, doubling) or "<shopId>|shop" (25 wrong).
+/// Forgot PIN (owner): one-time 6-digit code sent to the owner + backup email. Only a hash is stored.
+model PinReset {
+  id        String    @id @default(cuid())
+  shopId    String    @default("default")
+  accountId String
+  codeHash  String
+  attempts  Int       @default(0)
+  expiresAt DateTime
+  usedAt    DateTime?
+  ip        String    @default("")
+  createdAt DateTime  @default(now())
+
+  @@index([shopId, createdAt])
+}
+
+model LoginThrottle {
+  key         String    @id
+  failures    Int       @default(0)
+  lockCount   Int       @default(0)
+  lockedUntil DateTime?
+  lastFailAt  DateTime?
+  updatedAt   DateTime  @updatedAt
+}

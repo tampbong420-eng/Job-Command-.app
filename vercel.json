@@ -1,0 +1,68 @@
+{
+  "headers": [
+    {
+      "source": "/((?!_next/static|avatars|shop-mark.svg|uploads/jobs|sw.js).*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/avatars/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/shop-mark.svg",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/uploads/jobs/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/estimate-followup",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/alerts",
+      "schedule": "5 14 * * *"
+    },
+    {
+      "path": "/api/cron/job-cost",
+      "schedule": "15 14 * * *"
+    }
+  ],
+  "buildCommand": "npm run build:vercel"
+}

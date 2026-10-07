@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Job Command — keys to merge into ios/App/App/Info.plist after `npx cap add ios`.
+  native/ios/apply-ios-config.sh merges them with PlistBuddy (on the Mac). Plain words: Apple shows these
+  strings in the permission pop-ups, and App Review reads them.
+-->
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>Job Command</string>
+
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Job Command uses the microphone only when you tap the mic, so you can talk a lead, a job note, or an estimate line into the app instead of typing.</string>
+
+  <key>NSSpeechRecognitionUsageDescription</key>
+  <string>Job Command turns what you say into text so it can fill in leads, notes, hours, and estimate lines for you.</string>
+
+  <key>NSCameraUsageDescription</key>
+  <string>Job Command uses the camera to take job-site photos and receipt photos that you add to a job.</string>
+
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Job Command lets you pick job-site photos, receipts, and your company logo from your photo library.</string>
+
+  <!-- Needed even without our own "save" button: a long-press on a photo in the WebView offers
+       "Add to Photos", and iOS closes the app if this string is missing. -->
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>Job Command saves a job-site photo or receipt to your photo library only when you choose to save it.</string>
+
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>While you are clocked in, Job Command shares your location with your shop's office so they can see who is on which job site. Sharing stops when you clock out.</string>
+
+  <key>ITSAppUsesNonExemptEncryption</key>
+  <false/>
+
+  <!-- capacitor.config.json sets limitsNavigationsToAppBoundDomains: the WebView only loads these. -->
+  <key>WKAppBoundDomains</key>
+  <array>
+    <string>jobcommand.app</string>
+    <string>www.jobcommand.app</string>
+  </array>
+
+  <key>UISupportedInterfaceOrientations</key>
+  <array>
+    <string>UIInterfaceOrientationPortrait</string>
+  </array>
+
+  <key>UIUserInterfaceStyle</key>
+  <string>Automatic</string>
+</dict>
+</plist>

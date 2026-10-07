@@ -1,0 +1,74 @@
+.hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+  animation: hintFade 4s ease-in-out forwards;
+}
+
+.swipeMotion {
+  position: relative;
+  width: 200px;
+  height: 80px;
+}
+
+.text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  text-transform: lowercase;
+  letter-spacing: 3px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+}
+
+.curveLeft,
+.curveRight {
+  position: absolute;
+  top: 50%;
+  width: 80px;
+  height: 40px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.curveLeft {
+  left: 0;
+  animation: swipeLeftCurve 1.5s ease-in-out infinite;
+}
+
+.curveRight {
+  right: 0;
+  animation: swipeRightCurve 1.5s ease-in-out infinite;
+}
+
+.curveLeft svg,
+.curveRight svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 8px rgba(251, 146, 60, 0.8));
+}
+
+@keyframes swipeLeftCurve {
+  0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+  50% { transform: translateY(-50%) translateX(-20px); opacity: 1; }
+}
+
+@keyframes swipeRightCurve {
+  0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+  50% { transform: translateY(-50%) translateX(20px); opacity: 1; }
+}
+
+@keyframes hintFade {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

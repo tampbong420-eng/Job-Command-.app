@@ -1,0 +1,777 @@
+/* =====================================================================
+   UI batch (Eric, call 2026-10-02 12:32–12:46 PM CT). Loaded last (app/layout.tsx).
+   1  Top bar: alerts bell LEFT · DARK|LIGHT CENTER · the one mic RIGHT
+   2  Selected calendar day: bright red
+   3  "Press and hold to select multiple days" one-time hint
+   4  Orange swipe labels
+   5  White buttons with dark crisp edges in BOTH looks (Guide is the only green)
+   6  Job arrows at the top of Jobs, bigger
+   7  Edit / New job right under the Finished row
+   9  Bigger plan boxes (Office › Billing)
+   Source tokens were fixed in globals.css (Light --btn-fill/--btn-ink, inverted rule, locked, done,
+   palette stage fills). This layer is the one button system that every look ends on.
+   Rules: buttons >= 48px, text >= 16px, no pastels, no gold or black buttons.
+   ===================================================================== */
+
+.app-shell {
+  --wb-fill: #ffffff;
+  --wb-ink: #111111;
+  --wb-edge: #18181b;
+  --wb-mute: #52525b;
+  --wb-mute-edge: #a1a1aa;
+  --wb-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.1);
+  --wb-guide: #65a30d;
+  --wb-guide-ink: #1a2e05;
+  --wb-red: #dc2626;
+  --wb-red-edge: #7f1d1d;
+  --wb-orange: #ea580c;
+}
+
+/* ---------- 1. Top bar ---------- */
+.app-shell .phone-corner.top-trio {
+  left: 8px;
+  right: 8px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.app-shell .topbar.top-trio {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.top-trio > * {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.top-trio > * > * {
+  pointer-events: auto;
+}
+.top-trio-left {
+  justify-self: start;
+}
+.top-trio-center {
+  justify-self: center;
+}
+/* Job Command wordmark in the top-center (Eric, 2026-10-03). */
+.top-trio-center .brand-wordmark {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Eric's actual 3D logo (2026-10-03): sized to fit, never cut off. */
+.top-trio-center .brand-wordmark-img {
+  height: 36px;
+  width: auto;
+  max-width: 100%;
+  display: block;
+}
+.brand-wordmark-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+.brand-wordmark-app {
+  font-size: 28px;
+  font-weight: 900;
+  font-style: italic;
+  color: #f97316;
+  -webkit-text-fill-color: #f97316;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin-left: 2px;
+  letter-spacing: -1px;
+}
+.top-trio-center {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.top-trio-right {
+  justify-self: end;
+}
+.top-mic-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 52px;
+}
+.top-trio-right .net-dot {
+  position: static;
+}
+
+/* Bell: white key, dark edge, red count badge. */
+.app-shell.app-shell .top-trio .alert-hit,
+.app-shell.app-shell .top-trio .alert-hit.on {
+  position: relative;
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--wb-fill) !important;
+  background-image: none !important;
+  color: var(--wb-ink) !important;
+  -webkit-text-fill-color: var(--wb-ink) !important;
+  border: 2px solid var(--wb-edge) !important;
+  box-shadow: var(--wb-shadow) !important;
+  text-shadow: none;
+}
+.app-shell .top-trio .alert-bell {
+  width: 26px;
+  height: 26px;
+  stroke-width: 2.4;
+  color: var(--wb-ink);
+}
+.app-shell .top-trio .alert-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--wb-red);
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  border: 2px solid #ffffff;
+  font: 900 16px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* The one mic, in the top bar. Behaviour unchanged; only the spot and the key look. */
+.app-shell.app-shell .one-mic-fab.in-bar {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--wb-fill) !important;
+  color: var(--wb-ink) !important;
+  border: 2px solid var(--wb-edge) !important;
+  box-shadow: var(--wb-shadow) !important;
+  transition: none;
+}
+.app-shell .one-mic-fab.in-bar svg {
+  width: 26px;
+  height: 26px;
+}
+/* Listening: red ring + pulse (the "recording" colour), still a white key. */
+.app-shell.app-shell .one-mic-fab.in-bar.listening {
+  color: #b91c1c !important;
+  border: 3px solid var(--wb-red) !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.35) !important;
+  animation: wb-mic-pulse 1.2s ease-in-out infinite;
+}
+@keyframes wb-mic-pulse {
+  50% {
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0.2);
+  }
+}
+/* Listening bar spans the bottom now that the mic is up top. */
+.app-shell .one-mic-listen {
+  border-color: var(--wb-red);
+}
+.app-shell .one-mic-listen b {
+  color: #fca5a5;
+}
+
+/* DARK | LIGHT pill: white track, picked half is a white key with a heavy dark ring. */
+.app-shell.app-shell [data-theme-switch] {
+  background: var(--wb-fill) !important;
+  border: 2px solid var(--wb-edge) !important;
+  box-shadow: var(--wb-shadow) !important;
+}
+.app-shell.app-shell [data-theme-switch] button {
+  color: var(--wb-mute) !important;
+  -webkit-text-fill-color: var(--wb-mute) !important;
+  background: transparent !important;
+}
+.app-shell.app-shell [data-theme-switch] button[aria-pressed="true"] {
+  color: var(--wb-ink) !important;
+  -webkit-text-fill-color: var(--wb-ink) !important;
+}
+.app-shell.app-shell [data-theme-switch] button::before {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.app-shell.app-shell [data-theme-switch] button[aria-pressed="true"]::before {
+  background: var(--wb-fill) !important;
+  border: 3px solid var(--wb-edge) !important;
+  box-shadow: none !important;
+}
+
+/* ---------- 2. Selected calendar day: bright red, white number ---------- */
+.app-shell.app-shell .sched-day.selected,
+.app-shell.app-shell .sched-day.selected.today,
+.app-shell.app-shell .cal-day.on,
+.app-shell.app-shell .cal-day.selected {
+  background: var(--wb-red) !important;
+  background-image: none !important;
+  border: 2px solid var(--wb-red-edge) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.4) !important;
+  outline: none !important;
+}
+.app-shell.app-shell .sched-day.selected :is(b, small, span),
+.app-shell.app-shell .cal-day.on :is(b, small, span) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: none !important;
+}
+.app-shell.app-shell .sched-day.selected .sched-bar {
+  background: #ffffff !important;
+}
+
+/* ---------- 3. One-time hold hint ---------- */
+.sched-hold-hint {
+  margin: 6px 0 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2px solid var(--wb-edge);
+  background: #ffffff;
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+  font: 800 16px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  text-align: center;
+}
+
+/* ---------- 4. Orange swipe label ---------- */
+.swipe-flash {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  z-index: 70;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--wb-orange);
+  border: 2px solid #7c2d12;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font: 900 18px/1.1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  animation: wb-flash 1000ms ease-out both;
+}
+@keyframes wb-flash {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.92);
+  }
+  15%,
+  70% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swipe-flash {
+    animation: none;
+  }
+  .app-shell.app-shell .one-mic-fab.in-bar.listening {
+    animation: none;
+  }
+}
+
+/* ---------- 5. White buttons, dark crisp edges, both looks ---------- */
+.app-shell.app-shell :is(
+    .ghost-action,
+    .btn-outline,
+    .lock-button,
+    .btn-next-action,
+    .next-action-button,
+    .lead-call,
+    .lead-advance,
+    .choice-stack button,
+    .choice-row button,
+    .weekday-row button,
+    .talk-form button,
+    .add-form button[type="submit"],
+    .est-send-sms,
+    .est-send-mail,
+    .job-nav,
+    .field-cam-btn,
+    .photo-strip-snap,
+    .talk-cam-btn,
+    .talk-cam-roll,
+    .copilot-btn,
+    .stage-call,
+    .btn-lead-red,
+    .btn-settled,
+    .tumbler-step,
+    .sched-arrow,
+    .sched-navgrp button,
+    .sched-expand,
+    .sched-today.jump,
+    .sched-dayedit,
+    .sched-span button,
+    .map-toggle button,
+    .paper-nav button,
+    .role-tab,
+    .company-signout,
+    .crew-folder,
+    .page button:not(.stage-bar):not(.sched-day):not(.guide-arrow):not(.guide-go):not([role="switch"]):not(.one-mic-fab):not(.alert-hit):not([data-theme-switch] button):not(.job-tumbler-dots button):not(.danger-action):not([data-danger]):not([class*="danger"]):not([class*="delete"]):not(.guide-line):not(.photo-thumb):not(.avatar-btn)
+  ):not(.stage-bar):not(.sched-day):not(.guide-arrow) {
+  background: var(--wb-fill) !important;
+  background-color: var(--wb-fill) !important;
+  background-image: none !important;
+  color: var(--wb-ink) !important;
+  -webkit-text-fill-color: var(--wb-ink) !important;
+  border: 2px solid var(--wb-edge) !important;
+  box-shadow: var(--wb-shadow) !important;
+  text-shadow: none !important;
+  filter: none !important;
+  opacity: 1;
+  animation: none;
+}
+.app-shell.app-shell :is(.ghost-action, .btn-outline, .lock-button, .choice-stack button, .choice-row button, .tumbler-step, .page button:not(.stage-bar):not(.sched-day):not(.job-tumbler-dots button):not([role="switch"])) :is(b, span, small, em, strong, p, i:not(.sched-bar)) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+}
+.app-shell.app-shell :is(.ghost-action, .btn-outline, .tumbler-step, .page button:not(.stage-bar):not(.sched-day)) svg {
+  color: inherit;
+}
+/* Picked / pressed / on: still white, marked by a heavier double ring. */
+.app-shell.app-shell :is(.choice-stack button, .choice-row button, .weekday-row button, .map-toggle button, .paper-nav button, .role-tab, .page button:not(.stage-bar):not(.sched-day):not(.job-tumbler-dots button):not([role="switch"]):not([data-theme-switch] button)):is(.on, [aria-pressed="true"], [aria-checked="true"]):not(.stage-bar):not(.sched-day) {
+  border: 3px solid var(--wb-edge) !important;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--wb-edge) !important;
+  font-weight: 900;
+}
+/* No pastel wash on Light (approved Light v2 final): plain page, no coloured glow at the top. */
+.app-shell[data-canvas="light"]::after,
+.app-shell[data-shell="light"]::after {
+  background: none !important;
+  background-image: none !important;
+}
+/* "Today" label on Schedule: a plain white tag, not a green highlight (Guide is the only green). */
+.app-shell.app-shell .sched-today:not(.jump) {
+  background: #ffffff !important;
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+  border: 2px solid var(--wb-edge) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Can't tap right now: white, gray edge, gray type. */
+.app-shell.app-shell :is(.ghost-action, .btn-outline, .tumbler-step, .page button:not(.stage-bar):not(.sched-day)):disabled {
+  color: var(--wb-mute) !important;
+  -webkit-text-fill-color: var(--wb-mute) !important;
+  border-color: var(--wb-mute-edge) !important;
+  box-shadow: none !important;
+}
+/* Delete / remove: still a white key, red edge and red type. */
+.app-shell.app-shell :is([data-danger], .danger-action, .page button[class*="danger"], .page button[class*="delete"], .page button[class*="remove"]) {
+  background: var(--wb-fill) !important;
+  background-image: none !important;
+  color: #b91c1c !important;
+  -webkit-text-fill-color: #b91c1c !important;
+  border: 2px solid #b91c1c !important;
+}
+
+/* Jobs step rows: white key, step colour as the edge + strip, dark label. */
+.app-shell.app-shell .stage-rail .stage-bar {
+  --row-strip: #64748b;
+  --row-edge: #475569;
+  background: var(--wb-fill) !important;
+  background-color: var(--wb-fill) !important;
+  background-image: none !important;
+  color: var(--wb-ink) !important;
+  -webkit-text-fill-color: var(--wb-ink) !important;
+  border: 2px solid var(--row-edge) !important;
+  box-shadow: inset 8px 0 0 var(--row-strip) !important;
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  min-height: 52px;
+}
+.app-shell.app-shell .stage-rail .stage-bar[data-edge="lead"] { --row-strip: #dc2626; --row-edge: #b91c1c; }
+.app-shell.app-shell .stage-rail .stage-bar[data-edge="estimate"] { --row-strip: #ea580c; --row-edge: #c2410c; }
+.app-shell.app-shell .stage-rail .stage-bar[data-edge="schedule"] { --row-strip: #ca8a04; --row-edge: #a16207; }
+.app-shell.app-shell .stage-rail .stage-bar[data-edge="active"] { --row-strip: #65a30d; --row-edge: #4d7c0f; }
+.app-shell.app-shell .stage-rail .stage-bar[data-edge="invoice"] { --row-strip: #16a34a; --row-edge: #15803d; }
+.app-shell.app-shell .stage-rail .stage-bar[data-edge="archive"] { --row-strip: #64748b; --row-edge: #475569; }
+.app-shell.app-shell .stage-rail .stage-bar :is(b, span, p) {
+  color: var(--wb-ink) !important;
+  -webkit-text-fill-color: var(--wb-ink) !important;
+  text-shadow: none !important;
+}
+.app-shell.app-shell .stage-rail .stage-bar > span:last-child {
+  color: var(--row-edge) !important;
+  -webkit-text-fill-color: var(--row-edge) !important;
+  font-weight: 900;
+}
+.app-shell.app-shell .stage-rail .stage-bar .stage-check {
+  color: #15803d !important;
+  -webkit-text-fill-color: #15803d !important;
+}
+/* The step to do next: same white key, heavier edge in its colour. */
+.app-shell.app-shell .stage-rail .stage-bar.btn-next-action {
+  border-width: 3px !important;
+  box-shadow: inset 10px 0 0 var(--row-strip), 0 0 0 2px #ffffff, 0 0 0 4px var(--row-edge) !important;
+}
+/* Locked: white, gray dashed edge, gray type, lock icon. No black fill. */
+.app-shell.app-shell .stage-rail .stage-bar.locked {
+  border: 2px dashed var(--wb-mute-edge) !important;
+  box-shadow: inset 8px 0 0 #d4d4d8 !important;
+}
+.app-shell.app-shell .stage-rail .stage-bar.locked :is(b, span) {
+  color: var(--wb-mute) !important;
+  -webkit-text-fill-color: var(--wb-mute) !important;
+}
+.app-shell .stage-lock {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  stroke-width: 2.6;
+}
+/* Guide arrow beside the next step = the Guide colour (the only green). */
+.app-shell.app-shell .guide-arrow {
+  background: var(--wb-guide) !important;
+  background-image: none !important;
+  filter: none !important;
+}
+
+/* Dock: white keys with dark edges; the open tab gets the heavy ring; Guide is the one green key. */
+.app-shell.app-shell .dock .dock-btn:not(.guide-go) {
+  background: var(--wb-fill) !important;
+  background-image: none !important;
+  color: var(--wb-ink) !important;
+  -webkit-text-fill-color: var(--wb-ink) !important;
+  border: 2px solid var(--wb-edge) !important;
+  box-shadow: var(--wb-shadow) !important;
+  text-shadow: none !important;
+  filter: none !important;
+  font-size: 16px;
+  min-height: 52px;
+}
+.app-shell.app-shell .dock .dock-btn:not(.guide-go) svg {
+  color: var(--wb-ink) !important;
+}
+.app-shell.app-shell .dock .dock-btn.on:not(.guide-go) {
+  border: 3px solid var(--wb-edge);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--wb-edge);
+  font-weight: 900;
+}
+.app-shell.app-shell .dock .dock-btn.guide-go {
+  background: var(--wb-guide) !important;
+  background-image: none !important;
+  color: var(--wb-guide-ink) !important;
+  -webkit-text-fill-color: var(--wb-guide-ink) !important;
+  border: 2px solid var(--wb-guide-ink) !important;
+  box-shadow: 0 2px 0 var(--wb-guide-ink) !important;
+  font-size: 16px;
+  min-height: 52px;
+}
+.app-shell.app-shell .dock .dock-btn.guide-go svg {
+  color: var(--wb-guide-ink) !important;
+}
+
+/* ---------- 6. Job arrows at the top of Jobs, bigger ---------- */
+.app-shell .job-tumbler-nav.jobs-nav-top {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 10px;
+}
+.app-shell.app-shell .job-tumbler-nav.jobs-nav-top .tumbler-step {
+  width: 64px;
+  height: 56px;
+  min-height: 56px;
+  border-radius: 16px;
+  font-size: 24px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+.app-shell .job-tumbler-nav.jobs-nav-top .job-tumbler-dots {
+  justify-content: center;
+}
+
+/* ---------- 7. Edit / New job right under the Finished row ---------- */
+.app-shell.app-shell .command-rolodex .job-tumbler-shell,
+.app-shell.app-shell .command-rolodex .job-tumbler-shell .command-card {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+/* The rolodex grid has a 10px gap; pull the buttons up so they sit right on the Finished row. */
+.app-shell.app-shell .command-rolodex .jobs-bottom-actions {
+  margin-top: -10px;
+  padding-top: 0;
+}
+.app-shell.app-shell .command-rolodex .jobs-bottom-actions .ghost-action {
+  min-height: 52px;
+  font-size: 18px;
+}
+
+/* ---------- 9. Plan boxes (Office › Billing), bigger ---------- */
+.app-shell .plan-boxes {
+  display: grid;
+  gap: 14px;
+  margin: 8px 0 12px;
+}
+.app-shell.app-shell .plan-boxes .plan-box {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 16px;
+  min-height: 132px;
+  margin: 0;
+  padding: 20px 18px;
+  border-radius: 18px;
+  text-align: left;
+  white-space: normal;
+}
+.app-shell.app-shell .plan-boxes .plan-box.on {
+  border: 3px solid var(--wb-edge) !important;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 5px var(--wb-edge) !important;
+}
+.app-shell .plan-box-num {
+  display: grid;
+  place-items: center;
+  min-width: 112px;
+  min-height: 92px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  border: 2px solid var(--wb-edge);
+  font: 900 36px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.01em;
+}
+.app-shell .plan-box-num small {
+  display: block;
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 800;
+}
+.app-shell .plan-box-info {
+  display: grid;
+  gap: 6px;
+}
+.app-shell .plan-box-info b {
+  font-size: 19px;
+  line-height: 1.2;
+}
+.app-shell .plan-box-info span {
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+/* App link on each employee's profile */
+.app-shell .crew-invite-one .invite-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+.app-shell .crew-invite-one .command-empty {
+  font-size: 16px;
+  line-height: 1.35;
+}
+.app-shell.app-shell .crew-invite-one .ghost-action {
+  min-height: 52px;
+  font-size: 17px;
+}
+.app-shell .crew-invite-one .invite-url {
+  display: block;
+  word-break: break-all;
+  font-size: 16px;
+  margin-top: 6px;
+}
+
+/* ---- Job cover photo (Eric, 2026-10-03): under the client name, above the arrows ---- */
+.app-shell .job-cover {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 10px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
+  cursor: pointer;
+}
+.app-shell .job-cover.static {
+  cursor: default;
+}
+.app-shell .job-cover img {
+  display: block;
+  width: 100%;
+  height: 148px;
+  object-fit: cover;
+}
+.app-shell .job-cover.hero {
+  margin: 10px 0 2px;
+  border-radius: 14px 14px 14px 14px;
+}
+.app-shell .job-cover.hero img {
+  height: 190px;
+}
+.app-shell .job-cover.small img {
+  height: 92px;
+}
+.app-shell .job-cover-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(0, 0, 0, 0.68);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 99px;
+  pointer-events: none;
+}
+
+/* ---- Full-screen photo gallery (tap the cover) ---- */
+.photo-gallery {
+  position: fixed;
+  inset: 0;
+  z-index: 17000;
+  background: rgba(5, 5, 5, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pg-frame {
+  margin: 0;
+  max-width: 94vw;
+  max-height: 84vh;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+.pg-frame img {
+  max-width: 94vw;
+  max-height: 74vh;
+  border-radius: 10px;
+  object-fit: contain;
+}
+.pg-frame figcaption {
+  color: #d4d4d8;
+  font-size: 13px;
+  font-weight: 600;
+}
+.pg-close {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top, 0px));
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+.pg-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 64px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+.pg-arrow.left { left: 8px; }
+.pg-arrow.right { right: 8px; }
+.pg-dots {
+  position: absolute;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.pg-dots button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 99px;
+  background: #52525b;
+  cursor: pointer;
+}
+.pg-dots button.on {
+  width: 22px;
+  background: #f59e0b;
+}
+
+/* Tiny fluorescent green glow on bell, mic, and bottom nav icons (Eric, 2026-10-03). */
+.app-shell.app-shell .top-trio .alert-hit svg,
+.app-shell.app-shell .top-trio .top-mic-slot svg,
+.app-shell.app-shell .top-trio .one-mic-fab svg {
+  filter: drop-shadow(0 0 4px rgba(163, 230, 53, 0.8));
+}
+
+/* Dock (bottom nav) icons get the tiny green glow too (Eric, 2026-10-03). */
+.dock .dock-btn svg {
+  filter: drop-shadow(0 0 3px rgba(163, 230, 53, 0.7));
+}
+
+/* Bell pulses orange when there are new notifications (Eric, 2026-10-03). */
+.app-shell.app-shell .top-trio .alert-hit.on {
+  animation: bell-notify-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes bell-notify-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 6px rgba(249, 115, 22, 0.5), var(--wb-shadow) !important;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(249, 115, 22, 0.9), var(--wb-shadow) !important;
+  }
+}
+
+/* Neon sign glow on the active pipeline stage (Eric, 2026-10-03).
+   Stage lit up solid in its own color with a bright pulsing halo. */
+.pipeline-btn.next-action-button,
+.stage-bar.next-action-button {
+  overflow: hidden;
+  position: relative;
+}
+
+/* Neon glow — the stage color halo. */
+.pipeline-btn.next-action-button,
+.stage-bar.next-action-button {
+  box-shadow:
+    inset 0 2px 6px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.2),
+    0 0 0 6px var(--step-pulse),
+    0 0 40px 12px color-mix(in srgb, var(--step-pulse) 100%, transparent),
+    0 0 90px 24px color-mix(in srgb, var(--step-pulse) 70%, transparent);
+}

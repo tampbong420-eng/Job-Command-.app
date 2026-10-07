@@ -1,0 +1,254 @@
+.rig {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(92vw, 360px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.plate {
+  position: relative;
+  z-index: 2;
+  width: 86px;
+  height: 16px;
+  margin-top: max(4px, env(safe-area-inset-top, 0px));
+  border-radius: 3px 3px 10px 10px;
+  background: linear-gradient(180deg, #d5dae1 0%, #5c646e 28%, #171b20 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 4px 6px rgba(0, 0, 0, 0.45);
+}
+
+.pitch {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 16px;
+  height: 8px;
+  border-radius: 4px 4px 1px 1px;
+  background: linear-gradient(180deg, #f4f6f8, #5a616a);
+  transform: translateX(-50%);
+}
+
+.screw {
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0%, #8d949c 40%, #22262b 100%);
+}
+
+.screwRight {
+  right: 12px;
+  left: auto;
+}
+
+.stem {
+  width: 8px;
+  height: 10px;
+  background: linear-gradient(90deg, #14171b, #c5ccd4 46%, #2a3036 100%);
+}
+
+.shade {
+  display: block;
+  width: 168px;
+  height: 90px;
+  margin-top: -8px;
+  shape-rendering: geometricPrecision;
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.55));
+}
+
+.phosphor {
+  opacity: 0;
+  animation: lampCatch 4.5s linear forwards;
+}
+
+.beam {
+  position: absolute;
+  top: 104px;
+  left: 50%;
+  width: min(78vw, 300px);
+  height: 390px;
+  background: radial-gradient(
+    ellipse 72% 100% at 50% 0%,
+    rgba(255, 255, 236, 0.7) 0%,
+    rgba(236, 255, 190, 0.5) 14%,
+    rgba(214, 245, 120, 0.32) 30%,
+    rgba(180, 220, 70, 0.16) 48%,
+    rgba(140, 190, 45, 0.07) 66%,
+    rgba(100, 150, 30, 0.02) 82%,
+    transparent 100%
+  );
+  filter: blur(12px);
+  clip-path: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform: translateX(-50%);
+  animation: lampCatch 4.5s linear forwards;
+}
+
+.glint {
+  position: absolute;
+  top: 236px;
+  left: 50%;
+  width: 132px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 70%, rgba(255, 255, 255, 0.82) 0%, rgba(226, 255, 170, 0.28) 42%, transparent 72%);
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform: translateX(-50%);
+  animation: lampCatch 4.5s linear forwards;
+}
+
+.bounce {
+  position: absolute;
+  top: 430px;
+  left: 50%;
+  width: 210px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(210, 255, 130, 0.35), transparent 70%);
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform: translateX(-50%);
+  animation: lampCatch 4.5s linear forwards;
+}
+
+.snap {
+  position: absolute;
+  top: 86px;
+  left: 50%;
+  width: 90px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.95), transparent 70%);
+  opacity: 0;
+  transform: translateX(-50%);
+  animation: lampSnap 4.5s linear forwards;
+}
+
+.live .phosphor,
+.live .beam,
+.live .glint,
+.live .bounce {
+  animation: none;
+  opacity: 1;
+}
+
+.live .snap {
+  animation: none;
+  opacity: 0;
+}
+
+/* Opening splash only: about two and a half inches off the beam. */
+.short .beam {
+  height: 150px;
+}
+
+.short .glint {
+  top: 158px;
+  width: 96px;
+}
+
+.short .bounce {
+  top: 228px;
+  width: 140px;
+}
+
+@keyframes lampCatch {
+  0%,
+  2.3% {
+    opacity: 0;
+  }
+  3.9% {
+    opacity: 0.22;
+  }
+  5% {
+    opacity: 1;
+  }
+  7.2% {
+    opacity: 0.16;
+  }
+  10%,
+  12.2% {
+    opacity: 0;
+  }
+  13.9% {
+    opacity: 0.18;
+  }
+  15.6% {
+    opacity: 0.92;
+  }
+  18.4% {
+    opacity: 0.1;
+  }
+  21.1%,
+  24.4% {
+    opacity: 0;
+  }
+  26.1% {
+    opacity: 0.28;
+  }
+  27.8% {
+    opacity: 1;
+  }
+  30.6% {
+    opacity: 0.18;
+  }
+  33.4%,
+  35.5% {
+    opacity: 0;
+  }
+  37.3% {
+    opacity: 0.4;
+  }
+  39.4% {
+    opacity: 0.14;
+  }
+  41.1% {
+    opacity: 0.78;
+  }
+  43.3%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes lampSnap {
+  0%,
+  42.2% {
+    opacity: 0;
+  }
+  43.3% {
+    opacity: 0.85;
+  }
+  45.6%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phosphor,
+  .beam,
+  .glint,
+  .bounce,
+  .snap {
+    animation: none;
+  }
+
+  .phosphor,
+  .beam,
+  .glint,
+  .bounce {
+    opacity: 1;
+  }
+}

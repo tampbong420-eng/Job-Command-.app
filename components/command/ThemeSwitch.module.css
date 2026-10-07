@@ -1,0 +1,113 @@
+/* DARK | LIGHT pill (Option A v2, /workspace/mockups/theme-toggle + light-color-v2/pill-v1-v2.png).
+   Sits in the top-right corner, left of the orange alert badge, on every app screen.
+   Eric's rules: whole pill and each half 48px tall, labels 16px. */
+.pill {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 148px;
+  height: 48px;
+  padding: 0;
+  border-radius: 999px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.half {
+  position: relative;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font: 800 16px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* The knob: the picked half is a filled key inset 3px inside the pill. */
+.half::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 999px;
+  z-index: 0;
+}
+
+.half > * {
+  position: relative;
+  z-index: 1;
+}
+
+.half svg {
+  width: 16px;
+  height: 16px;
+}
+
+.half:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: -3px;
+  border-radius: 999px;
+}
+
+/* Dark (Lime Industrial): black pill, lime edge, lime knob with black type. */
+.dark {
+  background: #0d0d0d;
+  border: 2px solid #a3e635;
+  box-shadow: 0 0 14px rgba(163, 230, 53, 0.35);
+}
+
+.dark .half {
+  color: #d4d4d8;
+  -webkit-text-fill-color: #d4d4d8;
+}
+
+.dark .half.on {
+  color: #0d0d0d;
+  -webkit-text-fill-color: #0d0d0d;
+}
+
+.dark .half.on::before {
+  background: #a3e635;
+}
+
+/* Light (v2): light-gray track, the picked half is a white key with dark type (no gold). */
+.light {
+  background: #f4f4f5;
+  border: 1.5px solid #a1a1aa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.light .half {
+  color: #3f3f46;
+  -webkit-text-fill-color: #3f3f46;
+}
+
+.light .half.on {
+  color: #111111;
+  -webkit-text-fill-color: #111111;
+}
+
+.light .half.on::before {
+  background: #ffffff;
+  border: 1.5px solid #a1a1aa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .half::before {
+    transition: background-color 160ms ease;
+  }
+}

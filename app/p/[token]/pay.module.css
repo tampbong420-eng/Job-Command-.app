@@ -1,0 +1,152 @@
+/* Client pay page (/p/<token>). Scoped here so globals.css (shared, busy) stays untouched.
+   Eric's rules: 16px+ text, 48px+ taps, high contrast, one clear action. */
+
+.page :global(.card-label) {
+  color: #3f3f46;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.page :global(.client-letterhead .brand-owner),
+.page :global(.client-letterhead .brand-place),
+.page :global(.client-letterhead-shop) {
+  color: #3f3f46;
+  font-size: 16px;
+}
+
+.page :global(.client-quote-lines span),
+.page :global(.client-quote-terms) {
+  color: #3f3f46;
+  font-size: 16px;
+}
+
+.due {
+  margin: 0;
+  font-size: 18px;
+  color: #161616;
+}
+
+.payButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 14px;
+  background: #14532d;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #052e16;
+}
+
+.payButton:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 3px;
+}
+
+.payButton[aria-busy="true"] {
+  background: #166534;
+}
+
+.notice {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid #b45309;
+  background: #fffbeb;
+  color: #161616;
+}
+
+.notice h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+  color: #161616;
+}
+
+.notice p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #27272a;
+}
+
+.paid {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid #15803d;
+  background: #f0fdf4;
+}
+
+.paid h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #14532d;
+}
+
+.paid p,
+.processing p {
+  margin: 0;
+  font-size: 16px;
+  color: #27272a;
+}
+
+.processing {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid #1d4ed8;
+  background: #eff6ff;
+}
+
+.processing h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #1e3a8a;
+}
+
+.contactRow {
+  display: grid;
+  gap: 10px;
+}
+
+.contactButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 2px solid #161616;
+  background: #ffffff;
+  color: #161616;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.secondary {
+  composes: contactButton;
+  min-height: 52px;
+  font-size: 17px;
+}
+
+.error {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #b91c1c;
+}

@@ -1,0 +1,34 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+
+test("exploding logo lives only on initial launch overlay", () => {
+  const burst = readFileSync(new URL("../components/command/LogoBurst.tsx", import.meta.url), "utf8");
+  const intro = readFileSync(new URL("../components/command/IntroBoot.tsx", import.meta.url), "utf8");
+  const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  const lead = readFileSync(new URL("../components/command/LeadStage.tsx", import.meta.url), "utf8");
+  const estimate = readFileSync(new URL("../components/command/EstimateStage.tsx", import.meta.url), "utf8");
+  const yellow = readFileSync(new URL("../components/command/YellowPrepStage.tsx", import.meta.url), "utf8");
+  const home = readFileSync(new URL("../components/command/EmployeeHome.tsx", import.meta.url), "utf8");
+  const gate = readFileSync(new URL("../components/command/AccessGate.tsx", import.meta.url), "utf8");
+  const desk = readFileSync(new URL("../components/command/EmployeeWorkspace.tsx", import.meta.url), "utf8");
+  const onboard = readFileSync(new URL("../components/command/EmployeeOnboard.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(burst, /IntroBoot/);
+  assert.match(burst, /INTRO_BOOT_ENABLED/);
+  assert.match(intro, /data-logo-burst/);
+  assert.match(intro, /INTRO_BOOT_SEEN/);
+  assert.match(intro, /INTRO_BOOT_MARK/);
+  assert.match(layout, /LogoBurst/);
+  assert.match(layout, /from "next\/font\/google"/);
+  assert.match(layout, /ScreenShield/);
+  assert.doesNotMatch(lead, /LogoBurst/);
+  assert.doesNotMatch(estimate, /LogoBurst/);
+  assert.doesNotMatch(yellow, /LogoBurst/);
+  assert.doesNotMatch(home, /LogoBurst/);
+  assert.doesNotMatch(gate, /LogoBurst/);
+  assert.doesNotMatch(desk, /LogoBurst/);
+  assert.doesNotMatch(onboard, /LogoBurst/);
+  assert.doesNotMatch(css, /data-logo-burst/);
+  assert.doesNotMatch(css, /LogoBurst/);
+});

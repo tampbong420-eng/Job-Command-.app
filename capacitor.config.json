@@ -1,0 +1,35 @@
+{
+  "appId": "app.jobcommand.shop",
+  "appName": "Job Command",
+  "webDir": "public",
+  "server": {
+    "url": "https://jobcommand.app",
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "limitsNavigationsToAppBoundDomains": true,
+    "backgroundColor": "#0e1115",
+    "preferredContentMode": "mobile"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#0e1115",
+      "showSpinner": false,
+      "iosSpinnerStyle": "small"
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}

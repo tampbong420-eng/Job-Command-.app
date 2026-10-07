@@ -1,0 +1,21 @@
+/* Size only: the three look buttons are big gloved-thumb targets. Colors come from each theme. */
+.choices {
+  gap: 10px;
+}
+
+.choices .pick {
+  width: 100%;
+  min-height: 76px;
+  padding: 14px 18px;
+  align-content: center;
+}
+
+.choices .pick b {
+  font-size: 21px;
+  line-height: 1.15;
+}
+
+.choices .pick span {
+  font-size: 15px;
+  line-height: 1.35;
+}

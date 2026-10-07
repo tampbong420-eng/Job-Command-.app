@@ -1,0 +1,511 @@
+/* Opening splash built on Eric's own logo (cut from job-command-logo.jpg; never redrawn or recolored).
+   Lifted charcoal, the steel shield rises in, a lime light traces its rim, the JC powers on, one gold
+   sheen, JOB COMMAND settles in, a lime line fills, then the lockup lifts and fades into the app.
+   Transform/opacity (and one SVG stroke) only. No flicker, no blackout, no grain, no vignette, no red.
+   Beats (ms of 2800): shield 0–500, trace 400–1100, power-on 900–1300, sheen 1200–1700,
+   wordmark 1500–2000, line 1950–2350, exit 2300–2800. */
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 40000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  /* #0d0d0d is only the paint-before-gradient fallback; the lifted charcoal sits on top. */
+  background-color: #0d0d0d;
+  background-image: radial-gradient(ellipse 130% 95% at 50% 47%, #1d2025 0%, #1b1e23 50%, #15171b 100%);
+  pointer-events: none;
+  touch-action: none;
+  animation: splashVeil var(--intro-ms, 2.8s) linear forwards;
+}
+
+/* Lockup in the original's own proportions: shield over JOB COMMAND, as in job-command-logo.jpg
+   (624×524 px of the original). Shield and wordmark are separate layers cut from it. */
+.lockup {
+  position: relative;
+  width: min(94vw, 86vh, 700px);
+  aspect-ratio: 624 / 524;
+  pointer-events: none;
+  animation: splashExit 500ms cubic-bezier(0.4, 0, 0.2, 1) 2300ms both;
+  will-change: transform, opacity;
+}
+
+/* The original's own top light: a soft steel spotlight behind the shield (no hard edge). */
+.lockup::before {
+  content: "";
+  position: absolute;
+  left: -45%;
+  right: -45%;
+  top: -40%;
+  height: 120%;
+  background: radial-gradient(
+    closest-side,
+    rgba(118, 126, 136, 0.42) 0%,
+    rgba(92, 99, 108, 0.22) 42%,
+    rgba(70, 76, 84, 0.08) 70%,
+    rgba(70, 76, 84, 0) 100%
+  );
+  opacity: 0;
+  animation: splashLight 700ms cubic-bezier(0.16, 1, 0.3, 1) 0ms both;
+}
+
+.shieldBox {
+  position: absolute;
+  left: 17.308%;
+  top: 0;
+  width: 65.224%;
+  height: 76.718%;
+}
+
+.shield,
+.shieldSoft {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.shield {
+  opacity: 0;
+  transform: translateY(18px) scale(0.9);
+  animation: splashMark 500ms cubic-bezier(0.16, 1, 0.3, 1) 0ms both;
+  will-change: transform, opacity;
+}
+
+/* A pre-blurred copy (static blur, only its opacity moves) so the shield comes in out of soft focus. */
+.shieldSoft {
+  filter: blur(10px);
+  opacity: 0;
+  transform: translateY(18px) scale(0.9);
+  animation: splashSoft 500ms cubic-bezier(0.16, 1, 0.3, 1) 0ms both;
+  will-change: transform, opacity;
+}
+
+/* JC powers on: one clean lime ramp behind the shield, then it settles. */
+.bloom {
+  position: absolute;
+  inset: -20% -24%;
+  background: radial-gradient(
+    closest-side at 50% 52%,
+    rgba(178, 255, 0, 0.34) 0%,
+    rgba(178, 255, 0, 0.14) 46%,
+    rgba(178, 255, 0, 0.04) 72%,
+    rgba(178, 255, 0, 0) 100%
+  );
+  opacity: 0;
+  transform: scale(0.86);
+  animation: splashBloom 900ms cubic-bezier(0.22, 1, 0.36, 1) 900ms both;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Thin lime light running the shield's rim, drawn over the artwork (does not replace it). */
+.trace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 1;
+  animation: splashTraceOut 450ms ease-out 1100ms both;
+  pointer-events: none;
+}
+
+.traceLine,
+.traceGlow {
+  fill: none;
+  stroke: #b2ff00;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: splashTrace 700ms cubic-bezier(0.45, 0, 0.2, 1) 400ms both;
+}
+
+.traceLine {
+  stroke-width: 3;
+}
+
+.traceGlow {
+  stroke-width: 10;
+  stroke-opacity: 0.28;
+  filter: blur(3px);
+}
+
+/* One gold specular sweep, clipped to the shield by the shield image's own alpha. */
+.sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.sheen::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: -60%;
+  width: 220%;
+  background: linear-gradient(
+    115deg,
+    rgba(201, 162, 39, 0) 43%,
+    rgba(201, 162, 39, 0.28) 47.5%,
+    rgba(246, 228, 160, 0.62) 50%,
+    rgba(201, 162, 39, 0.28) 52.5%,
+    rgba(201, 162, 39, 0) 57%
+  );
+  opacity: 0;
+  transform: translateX(-42%);
+  animation: splashSheen 500ms cubic-bezier(0.45, 0, 0.25, 1) 1200ms both;
+  will-change: transform, opacity;
+}
+
+.wordBox {
+  position: absolute;
+  left: 0;
+  top: 74.427%;
+  width: 100%;
+  height: 25.573%;
+}
+
+/* JOB COMMAND slides up and its spacing settles (a slight horizontal squeeze back to true width). */
+.wordmark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: translateY(14px) scaleX(1.06);
+  animation: splashWord 500ms cubic-bezier(0.16, 1, 0.3, 1) 1500ms both;
+  will-change: transform, opacity;
+}
+
+/* Thin lime line under the wordmark that fills once. */
+.progress {
+  position: absolute;
+  left: 32%;
+  width: 36%;
+  top: 80%;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  opacity: 0;
+  animation: splashFadeIn 250ms ease-out 1850ms both;
+}
+
+.progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(178, 255, 0, 0.55), #b2ff00);
+  box-shadow: 0 0 8px rgba(178, 255, 0, 0.55);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: splashFill 400ms cubic-bezier(0.65, 0, 0.35, 1) 1950ms both;
+}
+
+@keyframes splashLight {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splashMark {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.9);
+  }
+  35% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splashSoft {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.9);
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splashTrace {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes splashTraceOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes splashBloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+}
+
+@keyframes splashSheen {
+  0% {
+    opacity: 0;
+    transform: translateX(-42%);
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(42%);
+  }
+}
+
+@keyframes splashWord {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scaleX(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleX(1);
+  }
+}
+
+@keyframes splashFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splashFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes splashExit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+
+/* Solid until 2.4s (lockup already lifting away), then a 400ms ease-out fade into the app. */
+@keyframes splashVeil {
+  0%,
+  85.7% {
+    opacity: 1;
+    visibility: visible;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* Reduced motion: no moves at all. The logo is simply there, then everything fades. */
+@media (prefers-reduced-motion: reduce) {
+  .lockup {
+    animation: splashExit 400ms ease-out 2300ms both;
+    transform: none;
+  }
+  @keyframes splashExit {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  .lockup::before,
+  .shield,
+  .wordmark {
+    animation: splashFadeIn 300ms ease-out 0ms both;
+    transform: none;
+  }
+  .shieldSoft,
+  .bloom,
+  .trace,
+  .sheen,
+  .progress {
+    display: none;
+  }
+}
+
+/* Bold ".APP" in warm orange matching Jobs header, slanted like paint strokes — Eric 2026-10-07 */
+.appText {
+  display: block;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 96px;
+  font-weight: 900;
+  font-style: italic;
+  color: #f97316;
+  letter-spacing: -3px;
+  line-height: 1;
+  margin-bottom: 16px;
+  text-shadow: 
+    0 2px 0 rgba(180, 60, 0, 0.4),
+    0 3px 20px rgba(249, 115, 22, 0.5), 
+    0 0 40px rgba(249, 115, 22, 0.3);
+  position: relative;
+  z-index: 2;
+  /* Slanted like hand-painted brush strokes */
+  transform: skewX(-10deg) rotate(-1deg);
+  /* Phase 1: Appears clean */
+  opacity: 0;
+  animation: appAppear 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+@keyframes appAppear {
+  0% { opacity: 0; transform: skewX(-10deg) rotate(-1deg) scale(0.9); }
+  100% { opacity: 1; transform: skewX(-10deg) rotate(-1deg) scale(1); }
+}
+
+/* Paint burst container */
+.paintBurst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.paintBurst i {
+  position: absolute;
+  background: #f97316;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+/* Phase 2-4: Paint droplets burst across, then settle */
+@keyframes dropBurst1 {
+  0% { opacity: 0; transform: translate(-120px, -40px) scale(0.3); }
+  30% { opacity: 1; transform: translate(-20px, -8px) scale(1.2); }
+  60% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1); }
+}
+
+@keyframes dropBurst2 {
+  0% { opacity: 0; transform: translate(120px, -60px) scale(0.3); }
+  30% { opacity: 1; transform: translate(20px, -12px) scale(1.1); }
+  60% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1); }
+}
+
+@keyframes dropBurst3 {
+  0% { opacity: 0; transform: translate(-80px, 60px) scale(0.4); }
+  30% { opacity: 1; transform: translate(-16px, 12px) scale(1.3); }
+  60% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1); }
+}
+
+@keyframes dropBurst4 {
+  0% { opacity: 0; transform: translate(80px, 50px) scale(0.4); }
+  30% { opacity: 1; transform: translate(16px, 10px) scale(1.2); }
+  60% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1); }
+}
+
+.paintBurst .drop1 {
+  width: 24px; height: 24px;
+  left: 35%; top: 30%;
+  animation: dropBurst1 900ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both;
+}
+
+.paintBurst .drop2 {
+  width: 18px; height: 18px;
+  left: 55%; top: 25%;
+  animation: dropBurst2 900ms cubic-bezier(0.16, 1, 0.3, 1) 650ms both;
+}
+
+.paintBurst .drop3 {
+  width: 28px; height: 28px;
+  left: 40%; top: 55%;
+  animation: dropBurst3 900ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both;
+}
+
+.paintBurst .drop4 {
+  width: 16px; height: 16px;
+  left: 60%; top: 50%;
+  animation: dropBurst4 900ms cubic-bezier(0.16, 1, 0.3, 1) 750ms both;
+}
+
+/* Smaller splatter particles */
+.paintBurst .drop5,
+.paintBurst .drop6,
+.paintBurst .drop7,
+.paintBurst .drop8 {
+  width: 8px; height: 8px;
+}
+
+.paintBurst .drop5 {
+  left: 30%; top: 40%;
+  animation: dropBurst1 700ms ease-out 800ms both;
+}
+
+.paintBurst .drop6 {
+  left: 65%; top: 35%;
+  animation: dropBurst2 700ms ease-out 850ms both;
+}
+
+.paintBurst .drop7 {
+  left: 45%; top: 65%;
+  animation: dropBurst3 700ms ease-out 900ms both;
+}
+
+.paintBurst .drop8 {
+  left: 55%; top: 60%;
+  animation: dropBurst4 700ms ease-out 950ms both;
+}
+

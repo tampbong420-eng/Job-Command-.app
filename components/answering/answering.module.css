@@ -1,0 +1,532 @@
+/* AI answering screens (setup, call list, Call Card). Phone-first, dark rich colors, no pastels.
+   Every tap target >= 48px (most are 56px), every word >= 16px. Scoped to this module only. */
+
+.screen {
+  min-height: 100dvh;
+  background: #0b0d0f;
+  color: #f8f8f9;
+  font-size: 17px;
+  line-height: 1.4;
+  padding: max(12px, env(safe-area-inset-top)) 12px calc(120px + env(safe-area-inset-bottom));
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  min-width: 52px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: #1c2127;
+  color: #f8f8f9;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid #2e353d;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.kicker {
+  color: #e2b93b;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+.card {
+  background: #161a1f;
+  border: 2px solid #262c33;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+
+.muted {
+  color: #c3c9d0;
+  font-size: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.grow {
+  flex: 1 1 auto;
+}
+
+/* status banners */
+.banner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.bannerOff {
+  background: #3a1d0b;
+  border: 2px solid #c2410c;
+  color: #fff3e8;
+}
+
+.bannerLive {
+  background: #0d2e1a;
+  border: 2px solid #16a34a;
+  color: #eafff1;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex: none;
+}
+
+.dotOff {
+  background: #f97316;
+}
+
+.dotLive {
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+}
+
+/* minutes meter */
+.meterNums {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.meterBig {
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.meterTrack {
+  height: 18px;
+  border-radius: 9px;
+  background: #0b0d0f;
+  border: 2px solid #2e353d;
+  overflow: hidden;
+}
+
+.meterFill {
+  height: 100%;
+  background: #16a34a;
+}
+
+.meterWarn {
+  background: #d97706;
+}
+
+.meterOver {
+  background: #dc2626;
+}
+
+/* big buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 0 20px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 800;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  color: #ffffff;
+  background: #1d4ed8;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btnWide {
+  width: 100%;
+}
+
+.btnGreen {
+  background: #15803d;
+  border-color: #22c55e;
+}
+
+.btnDark {
+  background: #1c2127;
+  border-color: #3a434d;
+}
+
+.btnRed {
+  background: #991b1b;
+  border-color: #dc2626;
+}
+
+/* two-way choice (On/Off, Male/Female) */
+.choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.choiceBtn {
+  min-height: 60px;
+  border-radius: 16px;
+  font-size: 19px;
+  font-weight: 800;
+  border: 3px solid #3a434d;
+  background: #1c2127;
+  color: #f8f8f9;
+  cursor: pointer;
+}
+
+.choiceOn {
+  background: #14532d;
+  border-color: #4ade80;
+  color: #ffffff;
+}
+
+.choiceOnOff {
+  background: #7c2d12;
+  border-color: #fb923c;
+  color: #ffffff;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 800;
+  color: #e2b93b;
+}
+
+.input,
+.select {
+  min-height: 56px;
+  border-radius: 14px;
+  border: 2px solid #3a434d;
+  background: #0b0d0f;
+  color: #f8f8f9;
+  font-size: 18px;
+  padding: 0 14px;
+  width: 100%;
+}
+
+.note {
+  font-size: 16px;
+  color: #c3c9d0;
+  margin: 8px 0 0;
+}
+
+.ok {
+  color: #4ade80;
+  font-weight: 800;
+}
+
+.bad {
+  color: #fb923c;
+  font-weight: 800;
+}
+
+/* setup steps */
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.stepNum {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 900;
+  background: #e2b93b;
+  color: #111111;
+}
+
+.stepDone {
+  background: #22c55e;
+}
+
+.stepText b {
+  display: block;
+  font-size: 18px;
+}
+
+.code {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 20px;
+  font-weight: 800;
+  background: #0b0d0f;
+  border: 2px solid #3a434d;
+  border-radius: 10px;
+  padding: 6px 10px;
+  letter-spacing: 0.04em;
+  color: #fde68a;
+  word-break: break-all;
+}
+
+.carrier {
+  border-top: 2px solid #262c33;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.carrier:first-child {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* call list */
+.callList {
+  display: grid;
+  gap: 10px;
+}
+
+.callRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  min-height: 84px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #161a1f;
+  border: 2px solid #262c33;
+  color: #f8f8f9;
+  text-decoration: none;
+}
+
+.callRowNew {
+  border-color: #e2b93b;
+}
+
+.callName {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.callWhen {
+  font-size: 16px;
+  color: #c3c9d0;
+  text-align: right;
+}
+
+.callLine {
+  grid-column: 1 / -1;
+  font-size: 17px;
+  color: #e5e7eb;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 800;
+  width: fit-content;
+}
+
+.chipBooked {
+  background: #14532d;
+  color: #dcfce7;
+  border: 2px solid #22c55e;
+}
+
+.chipBack {
+  background: #78350f;
+  color: #fff7ed;
+  border: 2px solid #f59e0b;
+}
+
+.chipSpam {
+  background: #27272a;
+  color: #e4e4e7;
+  border: 2px solid #52525b;
+}
+
+.chipSim {
+  background: #1e1b4b;
+  color: #e0e7ff;
+  border: 2px solid #6366f1;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px 10px;
+  color: #c3c9d0;
+  font-size: 18px;
+}
+
+/* Call Card */
+.who {
+  font-size: 30px;
+  font-weight: 900;
+  margin: 4px 0 2px;
+  line-height: 1.15;
+}
+
+.phone {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+.booked {
+  background: #0d2e1a;
+  border: 2px solid #16a34a;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.bookedWhen {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 4px 0;
+}
+
+.facts {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.facts dt {
+  font-size: 16px;
+  font-weight: 800;
+  color: #e2b93b;
+}
+
+.facts dd {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.factLink {
+  color: #93c5fd;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.summary {
+  font-size: 18px;
+  margin: 0;
+}
+
+.audio {
+  width: 100%;
+  height: 54px;
+}
+
+.transcript summary {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.turn {
+  margin: 10px 0 0;
+  font-size: 17px;
+}
+
+.turnWho {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: #e2b93b;
+}
+
+.turnUser .turnWho {
+  color: #93c5fd;
+}
+
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(11, 13, 15, 0) 0%, #0b0d0f 30%);
+}
+
+.dockInner {
+  max-width: 560px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.callBack {
+  min-height: 68px;
+  font-size: 22px;
+  border-radius: 20px;
+}
+
+.toast {
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 700;
+}

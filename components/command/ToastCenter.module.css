@@ -1,0 +1,131 @@
+.region {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 18000;
+  display: grid;
+  gap: 10px;
+  width: min(420px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.card {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: 28px 1fr 28px;
+  gap: 12px;
+  align-items: start;
+  padding: 16px 14px;
+  border-radius: 16px;
+  border: 2px solid #c9a227;
+  background: #0a0a0a;
+  color: #ffffff;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.72);
+  animation: toastIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.card[data-kind="success"] {
+  border-color: #c6f000;
+}
+
+.card[data-kind="error"] {
+  border-color: #ff3b30;
+  background: #140404;
+}
+
+.card[data-kind="info"] {
+  border-color: #efefef;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  margin-top: 1px;
+  color: #c6f000;
+}
+
+.card[data-kind="error"] .icon {
+  color: #ff3b30;
+}
+
+.card[data-kind="info"] .icon {
+  color: #efefef;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.kicker {
+  margin: 0 0 4px;
+  color: #c9a227;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.card[data-kind="success"] .kicker {
+  color: #c6f000;
+}
+
+.card[data-kind="error"] .kicker {
+  color: #ff8a80;
+}
+
+.card[data-kind="info"] .kicker {
+  color: #efefef;
+}
+
+.title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.body {
+  margin: 6px 0 0;
+  color: #f4f4f5;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:focus-visible {
+  outline: 2px solid #c9a227;
+  outline-offset: 2px;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+}

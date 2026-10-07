@@ -1,0 +1,52 @@
+.mark {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  color: #ff7a18;
+}
+
+.mark span {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  filter: drop-shadow(0 0 8px rgba(255, 122, 24, 0.9));
+  animation: swipeBlink 1s linear 5;
+}
+
+.mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.right {
+  left: 2px;
+}
+
+.left {
+  right: 2px;
+}
+
+.left svg {
+  transform: scaleX(-1);
+}
+
+@keyframes swipeBlink {
+  0%,
+  42% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark span {
+    animation: none;
+  }
+}

@@ -1,0 +1,311 @@
+/* PIN gate extras + Change PIN (go-public B1). Big, high-contrast, dark rich colors. */
+.status {
+  font-size: 17px !important;
+  line-height: 1.35;
+  color: #f2f2f2 !important;
+  text-align: center;
+  margin: 0;
+}
+.alert {
+  color: #ff6b5e !important;
+  font-weight: 700;
+}
+.help {
+  font-size: 17px !important;
+  line-height: 1.4;
+  color: #d4d4d4;
+  text-align: center;
+  margin: 4px 0 0;
+}
+.openKey {
+  background: #14532d !important;
+  border-color: #22c55e !important;
+  color: #ffffff !important;
+  font-size: 20px !important;
+  font-weight: 800;
+}
+.openKey:disabled {
+  background: #1f2a22 !important;
+  border-color: #2f3b33 !important;
+  color: #8a948d !important;
+}
+.wide {
+  width: 100%;
+  min-height: 52px;
+  font-size: 17px;
+}
+
+/* Office › Change PIN */
+.block {
+  display: grid;
+  gap: 12px;
+}
+.bigButton {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 14px;
+  border: 2px solid #c6f000;
+  background: #1b2a05;
+  color: #f8f8f9;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.banner {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 2px solid #f97316;
+  background: #3b1405;
+  color: #fff7ed;
+  font-size: 17px;
+  line-height: 1.4;
+}
+.banner b {
+  font-size: 19px !important;
+  color: #ffffff !important;
+}
+.banner span {
+  font-size: 17px !important;
+  line-height: 1.4;
+  color: #fff7ed !important;
+}
+.sheet {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid #3f3f46;
+  background: #111113;
+}
+.sheet h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #ffffff;
+}
+.sheet p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #e4e4e7;
+}
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+.field input {
+  min-height: 56px;
+  border-radius: 12px;
+  border: 2px solid #52525b;
+  background: #050505;
+  color: #ffffff;
+  font-size: 24px;
+  letter-spacing: 0.3em;
+  padding: 0 14px;
+}
+.field input:focus {
+  outline: none;
+  border-color: #c6f000;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.save {
+  min-height: 56px;
+  border-radius: 12px;
+  border: 2px solid #22c55e;
+  background: #14532d;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+}
+.save:disabled {
+  opacity: 0.6;
+}
+.cancel {
+  min-height: 56px;
+  border-radius: 12px;
+  border: 2px solid #52525b;
+  background: #18181b;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+.error {
+  font-size: 17px !important;
+  font-weight: 700;
+  color: #ff6b5e !important;
+}
+.done {
+  font-size: 17px !important;
+  font-weight: 700;
+  color: #4ade80 !important;
+}
+
+:global(.app-shell[data-shell="light"]) .status,
+:global(.app-shell[data-shell="light"]) .help {
+  color: #111111 !important;
+}
+:global(.app-shell[data-shell="light"]) .alert,
+:global(.app-shell[data-shell="light"]) .error {
+  color: #b91c1c !important;
+}
+
+/* Owner recovery emails + office crew PIN reset (Eric 10:34 AM CT). */
+.field input.text {
+  font-size: 18px;
+  letter-spacing: normal;
+}
+.pickList {
+  display: grid;
+  gap: 8px;
+}
+.pick {
+  min-height: 52px;
+  border-radius: 12px;
+  border: 2px solid #52525b;
+  background: #18181b;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: left;
+  padding: 0 16px;
+}
+.pickOn {
+  border-color: #c6f000;
+  background: #1b2a05;
+}
+:global(.app-shell[data-shell="light"]) .pick {
+  background: #ffffff;
+  color: #111111;
+  border-color: #3f3f46;
+}
+:global(.app-shell[data-shell="light"]) .pickOn {
+  background: #ecfccb;
+  border-color: #3f6212;
+}
+
+/* Sign-in › Which shop? (multi-shop B2) */
+.shopField {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+.shopField input {
+  min-height: 56px;
+  border-radius: 12px;
+  border: 2px solid #52525b;
+  background: #050505;
+  color: #ffffff;
+  font-size: 22px;
+  padding: 0 14px;
+}
+.shopField input:focus {
+  outline: 3px solid #22c55e;
+  outline-offset: 2px;
+  border-color: #22c55e;
+}
+
+/* Open sign-up links (multi-shop B2) */
+.newShop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f4f4f5;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.leaveBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px auto 24px;
+  max-width: 560px;
+  padding: 0 16px;
+}
+.leaveBar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 2px solid #52525b;
+  border-radius: 12px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Big Sign Up button on the sign-in screen (Eric, 2026-10-03). */
+.bigSignup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 64px;
+  margin-top: 16px;
+  padding: 0 24px;
+  border-radius: 16px;
+  background: #f97316;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+  touch-action: manipulation;
+}
+
+.bigSignup:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+}
+
+/* Big Sign In button on the PIN pad screen (Eric, 2026-10-03). Green = go. */
+.bigSignin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 64px;
+  margin-top: 16px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 16px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.4);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bigSignin:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.bigSignin:not(:disabled):active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.4);
+}

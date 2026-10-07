@@ -1,0 +1,49 @@
+/* Trial-ending banner: same dark lime card in every shell theme (light shell repaints b/span). */
+.box {
+  margin: 8px 12px 4px;
+  padding: 14px 60px 16px 16px;
+  border-radius: 16px;
+  background: #17200b !important;
+  border: 1px solid #b8f03c;
+  color: #f4f7ee !important;
+  font-size: 16px;
+  line-height: 1.35;
+}
+.box b,
+.box span {
+  color: #f4f7ee !important;
+}
+.title {
+  display: block;
+  font-size: 19px !important;
+  font-weight: 800;
+}
+.line {
+  display: block;
+  margin-top: 4px;
+}
+.error {
+  display: block;
+  margin-top: 6px;
+  color: #ff9b8a !important;
+}
+.row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 16px !important;
+  font-weight: 700;
+  border: 1px solid #b8f03c;
+  background: transparent !important;
+  color: #f4f7ee !important;
+}
+.primary {
+  background: #b8f03c !important;
+  color: #111 !important;
+}

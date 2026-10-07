@@ -1,0 +1,194 @@
+/* Delete account (Apple 5.1.1(v)). Big and clear: 56px buttons, 16px+ text. Lime Industrial by default,
+   Light overrides below. Danger red, never the lime "go" color. */
+.wrap {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 2px solid rgba(255, 77, 77, 0.55);
+  border-radius: 14px;
+  background: rgba(255, 77, 77, 0.06);
+}
+
+.body,
+.lead,
+.list,
+.steps,
+.typeLabel,
+.check,
+.error,
+.doneLine {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.4;
+  color: #f5f5f5;
+}
+
+.lead {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.doneLine {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.list,
+.steps {
+  padding-left: 22px;
+  display: grid;
+  gap: 4px;
+}
+
+.keeps {
+  color: #c9c3b0;
+}
+
+.panel {
+  display: grid;
+  gap: 12px;
+}
+
+.plan {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 2px solid rgba(214, 184, 90, 0.6);
+  background: rgba(214, 184, 90, 0.08);
+}
+
+.plan[data-plan-live="1"] {
+  border-color: #ffb020;
+  background: rgba(255, 176, 32, 0.12);
+}
+
+.danger,
+.ghost {
+  min-height: 56px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.danger {
+  background: #e5292b;
+  color: #ffffff;
+  border: 2px solid #ff6b6b;
+}
+
+.danger:disabled {
+  background: #3a1d1d;
+  color: #b9a3a3;
+  border-color: #5a2a2a;
+  cursor: not-allowed;
+}
+
+.ghost {
+  background: transparent;
+  color: #f5f5f5;
+  border: 2px solid rgba(245, 245, 245, 0.45);
+}
+
+.typeLabel b {
+  color: #ff6b6b;
+}
+
+.typeBox {
+  min-height: 56px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 107, 107, 0.7);
+  background: #0e0e0e;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  font-weight: 700;
+}
+
+.check input {
+  width: 28px;
+  height: 28px;
+  accent-color: #e5292b;
+}
+
+.error {
+  color: #ff8a8a;
+  font-weight: 800;
+}
+
+/* ---------- Light ---------- */
+:global(.app-shell[data-shell="light"]) .wrap {
+  border-color: #b42318;
+  background: #fff5f4;
+}
+
+:global(.app-shell[data-shell="light"]) .body,
+:global(.app-shell[data-shell="light"]) .lead,
+:global(.app-shell[data-shell="light"]) .list,
+:global(.app-shell[data-shell="light"]) .steps,
+:global(.app-shell[data-shell="light"]) .typeLabel,
+:global(.app-shell[data-shell="light"]) .check,
+:global(.app-shell[data-shell="light"]) .doneLine {
+  color: #111111;
+}
+
+:global(.app-shell[data-shell="light"]) .keeps {
+  color: #3f3f46;
+}
+
+:global(.app-shell[data-shell="light"]) .plan {
+  border-color: #8a6d12;
+  background: #fffbea;
+}
+
+:global(.app-shell[data-shell="light"]) .plan[data-plan-live="1"] {
+  border-color: #b45309;
+  background: #fff4e0;
+}
+
+:global(.app-shell[data-shell="light"]) .danger {
+  background: #b42318;
+  border-color: #7a1a12;
+  color: #ffffff;
+}
+
+:global(.app-shell[data-shell="light"]) .danger:disabled {
+  background: #f1d5d2;
+  color: #6b4a46;
+  border-color: #e0b4ae;
+}
+
+:global(.app-shell[data-shell="light"]) .ghost {
+  color: #111111;
+  border-color: #3f3f46;
+  background: #ffffff;
+}
+
+:global(.app-shell[data-shell="light"]) .typeLabel b {
+  color: #b42318;
+}
+
+:global(.app-shell[data-shell="light"]) .typeBox {
+  background: #ffffff;
+  color: #111111;
+  border-color: #b42318;
+}
+
+:global(.app-shell[data-shell="light"]) .error {
+  color: #b42318;
+}
