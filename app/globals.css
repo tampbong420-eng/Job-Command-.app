@@ -13016,10 +13016,7 @@ button.guide-line {
   font-weight: 800;
   text-shadow: 0 0 8px rgba(178, 255, 0, 0.6);
   border-radius: 8px;
-  box-shadow:
-    inset 0 0 0 1.5px var(--li-lime),
-    inset 0 0 12px rgba(178, 255, 0, 0.2),
-    0 0 12px rgba(178, 255, 0, 0.4);
+  /* box-shadow REMOVED (Eric 2026-10-07) - white border rule applies instead */
 }
 
 .app-shell[data-shell="ink"][data-palette="1"][data-canvas="dark"] .dock .dock-btn[data-dock].on svg {
