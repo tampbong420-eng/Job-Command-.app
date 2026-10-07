@@ -473,8 +473,7 @@
   color: var(--wb-ink) !important;
 }
 .app-shell.app-shell .dock .dock-btn.on:not(.guide-go) {
-  border: 3px solid var(--wb-edge);
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--wb-edge);
+  /* BLOCKER REMOVED (Eric 2026-10-07) - white border rule in globals.css now applies */
   font-weight: 900;
 }
 .app-shell.app-shell .dock .dock-btn.guide-go {
