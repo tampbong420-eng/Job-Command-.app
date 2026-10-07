@@ -1145,6 +1145,7 @@ function Dock({
         data-dock="crew"
         onClick={() => onTab("crew")}
         aria-label="Roster"
+        style={tab === "crew" ? { border: "2px solid #ffffff", boxShadow: "0 0 12px rgba(255,255,255,0.5)" } : undefined}
       >
         <Clock className="size-5" />
       </button>
@@ -1155,6 +1156,7 @@ function Dock({
         data-dock="office"
         onClick={() => onTab("company")}
         aria-label="Office"
+        style={tab === "company" ? { border: "2px solid #ffffff", boxShadow: "0 0 12px rgba(255,255,255,0.5)" } : undefined}
       >
         <Settings className="size-5" />
       </button>
@@ -1164,6 +1166,7 @@ function Dock({
         data-edge="command"
         data-dock="control"
         onClick={() => onTab("command")}
+        style={tab === "command" ? { border: "2px solid #ffffff", boxShadow: "0 0 12px rgba(255,255,255,0.5)" } : undefined}
       >
         <Crown className="size-5" />
         Jobs
