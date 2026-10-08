@@ -1,6 +1,7 @@
 "use client";
 
 import { flushSync } from "react-dom";
+import type { MouseEvent as ReactMouseEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useShellTheme } from "@/hooks/use-shell-theme";
 import { useDeviceLook } from "@/components/command/DeviceLook";
@@ -19,14 +20,24 @@ const SKIN_LABELS: Record<string, string> = {
 };
 
 export function ThemeToggleButton({ className = "" }: { className?: string }) {
-  const { id, setId, look, ink } = useShellTheme();
+  const { id, setId, look, ink, setInk } = useShellTheme();
   const { accountKey } = useDeviceLook();
-  // Current text color dot (Eric 2026-10-07)
+  // Current text color dot (Eric 2026-10-07) - tappable to cycle text colors
   const isLight = look === "light";
   const inks = isLight ? LIGHT_TYPE_INKS : DARK_TYPE_INKS;
   const currentInkId = isLight ? ink?.light : ink?.dark;
   const currentInk = inks.find((i) => i.id === currentInkId);
   const dotColor = currentInk?.color || (isLight ? "#111111" : "#b2ff00");
+  const cycleInk = (e: ReactMouseEvent) => {
+    e.stopPropagation();
+    const currentIdx = inks.findIndex((i) => i.id === currentInkId);
+    const next = inks[(currentIdx + 1) % inks.length];
+    if (isLight) {
+      setInk({ dark: ink?.dark || "", light: next.id as any });
+    } else {
+      setInk({ dark: next.id as any, light: ink?.light || "" });
+    }
+  };
 
   const cycle = () => {
     const currentId = id === "auto" ? look : id;
@@ -53,14 +64,20 @@ export function ThemeToggleButton({ className = "" }: { className?: string }) {
       <Icon className="size-5" aria-hidden="true" />
       <span>{currentLabel}</span>
       <span
-        aria-hidden="true"
+        role="button"
+        tabIndex={0}
+        aria-label="Change text color"
+        onClick={cycleInk}
+        onKeyDown={(e: ReactKeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cycleInk(e as any); } }}
         style={{
-          width: "12px",
-          height: "12px",
-          borderRadius: "50%",
+          width: "28px",
+          height: "28px",
+          borderRadius: "6px",
           background: dotColor,
-          border: "1px solid rgba(0,0,0,0.3)",
+          border: "2px solid rgba(0,0,0,0.4)",
           flexShrink: 0,
+          cursor: "pointer",
+          display: "inline-block",
         }}
       />
     </button>
