@@ -1142,8 +1142,8 @@ function Dock({
   // Selected border: white on dark skins, neon green on light skins (white invisible on white).
   const isLightSkin = typeof document !== "undefined" &&
     ["light", "color"].includes(document.querySelector(".app-shell")?.getAttribute("data-shell") || "");
-  const selectedBorder = isLightSkin ? "#39ff14" : "#ffffff";
-  const selectedGlow = isLightSkin ? "rgba(57,255,20,0.5)" : "rgba(255,255,255,0.5)";
+  const selectedBorder = isLightSkin ? "#2ee600" : "#ffffff";
+  const selectedGlow = isLightSkin ? "rgba(46,230,0,0.5)" : "rgba(255,255,255,0.5)";
   const navStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "1fr 1fr 2fr 2fr",
@@ -1187,7 +1187,7 @@ function Dock({
   // Press feedback (Eric 2026-10-07): border flashes highlight color for 1 second when pushed.
   const [pressed, setPressed] = useState<string | null>(null);
   const pressStyle = (key: string): CSSProperties | undefined =>
-    pressed === key ? { background: "#f97316", color: "#ffffff" } : undefined;
+    pressed === key ? { background: selectedBorder, color: isLightSkin ? "#111111" : "#000000" } : undefined;
   const pressHandlers = (key: string) => ({
     onTouchStart: () => {
       setPressed(key);
