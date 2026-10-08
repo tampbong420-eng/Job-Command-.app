@@ -144,13 +144,16 @@ export function StageRail({
           };
 
           const rightStyle: CSSProperties = {
-            opacity: 0.9,
+            opacity: 1,
             textAlign: "right",
             flex: "0 0 auto",
             position: "relative",
             zIndex: 1,
-            fontSize: 13,
-            fontWeight: 700,
+            fontSize: 15,
+            fontWeight: 800,
+            color: "#ffffff",
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
             display: "flex",
             alignItems: "center",
             gap: 6,
@@ -259,9 +262,12 @@ export function StageRail({
                   ) : null}
                   <b
                     style={{
-                      fontSize: 13,
-                      fontWeight: 700,
+                      fontSize: 15,
+                      fontWeight: 800,
                       lineHeight: 1.25,
+                      color: "#ffffff",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
                       textShadow: selected ? `0 0 12px ${hexA(neon, 0.8)}` : "none",
                     }}
                   >
