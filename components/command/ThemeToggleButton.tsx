@@ -5,9 +5,10 @@ import { Moon, Sun } from "lucide-react";
 import { useShellTheme } from "@/hooks/use-shell-theme";
 import { useDeviceLook } from "@/components/command/DeviceLook";
 import { writeDeviceLook } from "@/lib/device-look";
+import type { ShellThemeId } from "@/lib/shell-theme";
 
 /** Skin cycle button (Eric, 2026-10-07). Lives under Edit on the job screen. Tap cycles through all skins. */
-const SKIN_CYCLE: readonly string[] = ["ink", "light", "midnight", "ember", "sage"];
+const SKIN_CYCLE: ShellThemeId[] = ["ink", "light", "midnight", "ember", "sage"];
 const SKIN_LABELS: Record<string, string> = {
   ink: "Lime Industrial",
   light: "Light",
@@ -21,14 +22,15 @@ export function ThemeToggleButton({ className = "" }: { className?: string }) {
   const { accountKey } = useDeviceLook();
 
   const cycle = () => {
-    const currentIdx = SKIN_CYCLE.indexOf(id === "auto" ? look : id);
-    const next = SKIN_CYCLE[(currentIdx + 1) % SKIN_CYCLE.length];
+    const currentId = id === "auto" ? look : id;
+    const currentIdx = SKIN_CYCLE.indexOf(currentId as ShellThemeId);
+    const next: ShellThemeId = SKIN_CYCLE[(currentIdx + 1) % SKIN_CYCLE.length];
     writeDeviceLook(accountKey, next);
     if (next === id) return;
     const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
     const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (doc.startViewTransition && !calm) doc.startViewTransition(() => flushSync(() => setId(next as any)));
-    else setId(next as any);
+    if (doc.startViewTransition && !calm) doc.startViewTransition(() => flushSync(() => setId(next)));
+    else setId(next);
   };
 
   const currentLabel = SKIN_LABELS[id === "auto" ? look : id] || id;
