@@ -6,6 +6,7 @@ import { useShellTheme } from "@/hooks/use-shell-theme";
 import { useDeviceLook } from "@/components/command/DeviceLook";
 import { writeDeviceLook } from "@/lib/device-look";
 import type { ShellThemeId } from "@/lib/shell-theme";
+import { DARK_TYPE_INKS, LIGHT_TYPE_INKS } from "@/lib/shell-ink";
 
 /** Skin cycle button (Eric, 2026-10-07). Lives under Edit on the job screen. Tap cycles through all skins. */
 const SKIN_CYCLE: ShellThemeId[] = ["ink", "light", "midnight", "ember", "sage"];
@@ -18,8 +19,14 @@ const SKIN_LABELS: Record<string, string> = {
 };
 
 export function ThemeToggleButton({ className = "" }: { className?: string }) {
-  const { id, setId, look } = useShellTheme();
+  const { id, setId, look, ink } = useShellTheme();
   const { accountKey } = useDeviceLook();
+  // Current text color dot (Eric 2026-10-07)
+  const isLight = look === "light";
+  const inks = isLight ? LIGHT_TYPE_INKS : DARK_TYPE_INKS;
+  const currentInkId = isLight ? ink?.light : ink?.dark;
+  const currentInk = inks.find((i) => i.id === currentInkId);
+  const dotColor = currentInk?.color || (isLight ? "#111111" : "#b2ff00");
 
   const cycle = () => {
     const currentId = id === "auto" ? look : id;
@@ -45,6 +52,17 @@ export function ThemeToggleButton({ className = "" }: { className?: string }) {
     >
       <Icon className="size-5" aria-hidden="true" />
       <span>{currentLabel}</span>
+      <span
+        aria-hidden="true"
+        style={{
+          width: "12px",
+          height: "12px",
+          borderRadius: "50%",
+          background: dotColor,
+          border: "1px solid rgba(0,0,0,0.3)",
+          flexShrink: 0,
+        }}
+      />
     </button>
   );
 }
