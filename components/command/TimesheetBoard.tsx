@@ -809,7 +809,7 @@ export function TimesheetBoard({
       .join(", ");
     const borderColor = isSelected ? (isToday ? "#ff0000" : calAccent) : isToday ? "#ff0000" : isPicked ? calAccent : "transparent";
     const background = isSelected ? calAccent : isPicked ? (isLightSkin ? "#e9f7d8" : "#16290a") : "transparent";
-    const color = isSelected ? "#0a0a0a" : !inMonth ? "#5a5a5a" : isPicked ? calAccent : "var(--wb-ink, #f5f5f5)";
+    const color = isSelected ? "#0a0a0a" : !inMonth ? "#5a5a5a" : isPicked ? calAccent : "#ffffff";
     return (
       <button
         key={iso}
