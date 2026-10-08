@@ -1184,16 +1184,19 @@ function Dock({
     boxShadow: "0 0 12px rgba(249,115,22,0.6)",
     animation: "dockPulse 1.5s ease-in-out infinite",
   };
-  // Press feedback (Eric 2026-10-07): border flashes highlight color when pushed.
+  // Press feedback (Eric 2026-10-07): border flashes highlight color for 1 second when pushed.
   const [pressed, setPressed] = useState<string | null>(null);
   const pressStyle = (key: string): CSSProperties | undefined =>
     pressed === key ? { border: `2px solid ${selectedBorder}`, boxShadow: `0 0 16px ${selectedGlow}` } : undefined;
   const pressHandlers = (key: string) => ({
-    onTouchStart: () => setPressed(key),
-    onTouchEnd: () => setPressed(null),
-    onMouseDown: () => setPressed(key),
-    onMouseUp: () => setPressed(null),
-    onMouseLeave: () => setPressed(null),
+    onTouchStart: () => {
+      setPressed(key);
+      setTimeout(() => setPressed(null), 1000);
+    },
+    onMouseDown: () => {
+      setPressed(key);
+      setTimeout(() => setPressed(null), 1000);
+    },
   });
   return (
     <>
