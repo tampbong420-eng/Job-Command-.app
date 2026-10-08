@@ -1136,53 +1136,72 @@ function Dock({
   onCommand: () => void;
   guideActive?: boolean;
 }) {
+  // CLEAN REBUILD (Eric 2026-10-07): No CSS classes, ONLY inline styles.
+  // Bypasses all 83 conflicting .dock-btn rules.
+  const navStyle: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 2fr 2fr",
+    gap: "8px",
+    padding: "12px",
+    background: "#1a1a1a",
+    borderRadius: "12px",
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 50,
+  };
+  const btnBase: React.CSSProperties = {
+    padding: "12px 8px",
+    borderRadius: "8px",
+    background: "#161616",
+    color: "#b2ff00",
+    border: "2px solid #4a5d23",
+    cursor: "pointer",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: "14px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "4px",
+  };
+  const btnSelected: React.CSSProperties = {
+    ...btnBase,
+    border: "2px solid #ffffff",
+    boxShadow: "0 0 12px rgba(255,255,255,0.5)",
+  };
+  const btnAction: React.CSSProperties = {
+    ...btnBase,
+    border: "2px solid #f97316",
+    boxShadow: "0 0 12px rgba(249,115,22,0.6)",
+    animation: "dockPulse 1.5s ease-in-out infinite",
+  };
   return (
-    <nav className="dock" data-count={4} aria-label="Desk" style={{ gridTemplateColumns: "1fr 1fr 2fr 2fr" }}>
-      <button
-        type="button"
-        className={`dock-btn${tab === "crew" ? " on" : ""}`}
-        data-edge="crew"
-        data-dock="crew"
-        onClick={() => onTab("crew")}
-        aria-label="Roster"
-        style={tab === "crew" ? { border: "2px solid #ffffff", boxShadow: "0 0 12px rgba(255,255,255,0.5)" } : undefined}
-      >
-        <Clock className="size-5" />
-      </button>
-      <button
-        type="button"
-        className={`dock-btn${tab === "company" ? " on" : ""}`}
-        data-edge="company"
-        data-dock="office"
-        onClick={() => onTab("company")}
-        aria-label="Office"
-        style={tab === "company" ? { border: "2px solid #ffffff", boxShadow: "0 0 12px rgba(255,255,255,0.5)" } : undefined}
-      >
-        <Settings className="size-5" />
-      </button>
-      <button
-        type="button"
-        className={`dock-btn${tab === "command" ? " on" : ""}`}
-        data-edge="command"
-        data-dock="control"
-        onClick={() => onTab("command")}
-        style={tab === "command" ? { border: "2px solid #ffffff", boxShadow: "0 0 12px rgba(255,255,255,0.5)" } : undefined}
-      >
-        <Crown className="size-5" />
-        Jobs
-      </button>
-      <button
-        type="button"
-        className={`dock-btn${guideActive ? " needs-action" : ""}`}
-        data-edge="guide"
-        data-dock="guide"
-        onClick={onCommand}
-        aria-label="Command"
-      >
-        <Compass className="size-5" />
-        Command
-      </button>
-    </nav>
+    <>
+      <style>{`@keyframes dockPulse { 0%,100% { box-shadow: 0 0 12px rgba(249,115,22,0.6); } 50% { box-shadow: 0 0 20px rgba(249,115,22,0.9); } }`}</style>
+      <nav aria-label="Desk" style={navStyle}>
+        <button type="button" onClick={() => onTab("crew")} aria-label="Roster"
+          style={tab === "crew" ? btnSelected : btnBase}>
+          <Clock className="size-5" />
+        </button>
+        <button type="button" onClick={() => onTab("company")} aria-label="Office"
+          style={tab === "company" ? btnSelected : btnBase}>
+          <Settings className="size-5" />
+        </button>
+        <button type="button" onClick={() => onTab("command")}
+          style={tab === "command" ? btnSelected : btnBase}>
+          <Crown className="size-5" />
+          Jobs
+        </button>
+        <button type="button" onClick={onCommand} aria-label="Command"
+          style={guideActive ? btnAction : btnBase}>
+          <Compass className="size-5" />
+          Command
+        </button>
+      </nav>
+    </>
   );
 }
 
