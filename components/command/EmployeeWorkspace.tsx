@@ -1138,12 +1138,14 @@ function Dock({
 }) {
   // CLEAN REBUILD (Eric 2026-10-07): No CSS classes, ONLY inline styles.
   // Bypasses all 83 conflicting .dock-btn rules.
+  // All-skin support (Eric 2026-10-07): Use CSS variables so colors adapt to active skin.
+  // White selected border works on every skin.
   const navStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "1fr 1fr 2fr 2fr",
     gap: "8px",
     padding: "12px",
-    background: "#1a1a1a",
+    background: "var(--wb-fill, #1a1a1a)",
     borderRadius: "12px",
     position: "fixed",
     bottom: 0,
@@ -1154,9 +1156,9 @@ function Dock({
   const btnBase: React.CSSProperties = {
     padding: "12px 8px",
     borderRadius: "8px",
-    background: "#161616",
-    color: "#b2ff00",
-    border: "2px solid #4a5d23",
+    background: "var(--wb-fill, #161616)",
+    color: "var(--wb-ink, #b2ff00)",
+    border: "2px solid var(--wb-edge, #4a5d23)",
     cursor: "pointer",
     textAlign: "center",
     fontWeight: "bold",
