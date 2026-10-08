@@ -1139,7 +1139,11 @@ function Dock({
   // CLEAN REBUILD (Eric 2026-10-07): No CSS classes, ONLY inline styles.
   // Bypasses all 83 conflicting .dock-btn rules.
   // All-skin support (Eric 2026-10-07): Use CSS variables so colors adapt to active skin.
-  // White selected border works on every skin.
+  // Selected border: white on dark skins, neon green on light skins (white invisible on white).
+  const isLightSkin = typeof document !== "undefined" &&
+    ["light", "color"].includes(document.querySelector(".app-shell")?.getAttribute("data-shell") || "");
+  const selectedBorder = isLightSkin ? "#39ff14" : "#ffffff";
+  const selectedGlow = isLightSkin ? "rgba(57,255,20,0.5)" : "rgba(255,255,255,0.5)";
   const navStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "1fr 1fr 2fr 2fr",
@@ -1171,8 +1175,8 @@ function Dock({
   };
   const btnSelected: React.CSSProperties = {
     ...btnBase,
-    border: "2px solid #ffffff",
-    boxShadow: "0 0 12px rgba(255,255,255,0.5)",
+    border: `2px solid ${selectedBorder}`,
+    boxShadow: `0 0 12px ${selectedGlow}`,
   };
   const btnAction: React.CSSProperties = {
     ...btnBase,
