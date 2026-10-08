@@ -1191,11 +1191,11 @@ function Dock({
   const pressHandlers = (key: string) => ({
     onTouchStart: () => {
       setPressed(key);
-      setTimeout(() => setPressed(null), 1000);
+      setTimeout(() => setPressed(null), 250);
     },
     onMouseDown: () => {
       setPressed(key);
-      setTimeout(() => setPressed(null), 1000);
+      setTimeout(() => setPressed(null), 250);
     },
   });
   return (
