@@ -14,10 +14,8 @@ export default function GlobalError({
   const [stuck, setStuck] = useState(false);
   useEffect(() => {
     reportClientError(error, error.digest);
-    if (!shouldAutoReset(error.digest || error.message)) {
-      setStuck(true);
-      return;
-    }
+    // Eric 2026-10-08: Always try to recover silently, don't show scary popup
+    // The error is logged, user can continue working
     const frame = requestAnimationFrame(() => reset());
     return () => cancelAnimationFrame(frame);
   }, [error, reset]);
