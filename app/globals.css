@@ -13937,6 +13937,15 @@ button,
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
 }
 
+/* White tap flash on EVERY button, not just the dock — Eric 2026-10-08 */
+.app-shell button:not(:disabled):active,
+.app-shell [role="button"]:not([aria-disabled="true"]):active,
+.app-shell input[type="submit"]:not(:disabled):active,
+.app-shell input[type="button"]:not(:disabled):active {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
+}
+
 /* Selected button on dark skins — white stays on (green is light-only) — Eric 2026-10-07 */
 .app-shell[data-shell="ink"] .dock .dock-btn.on,
 .app-shell[data-shell="dark"] .dock .dock-btn.on,
