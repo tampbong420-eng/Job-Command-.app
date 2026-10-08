@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SHELL_THEME_CHOICES, WORKFLOW_STEPS, shellThemeById, type ShellThemeId } from "@/lib/shell-theme";
 import { useShellTheme } from "@/hooks/use-shell-theme";
 import styles from "./ThemePicker.module.css";
@@ -66,9 +66,33 @@ export function ThemePicker({
         </div>
       </div>
     ) : null;
+  // Collapsible (Eric 2026-10-07): skins collapsed by default to save room in settings.
+  const [open, setOpen] = useState(false);
+  const currentChoice = SHELL_THEME_CHOICES.find((c) => c.id === value);
   return (
     <div className={`theme-picker${compact ? " compact" : ""}`} data-theme-picker="1">
-      {compact ? <p className="card-label">App look</p> : <p className="card-label">Pick your look</p>}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "12px",
+          background: "var(--wb-fill, #161616)",
+          color: "var(--wb-ink, #b2ff00)",
+          border: "2px solid var(--wb-edge, #4a5d23)",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "bold",
+        }}
+        aria-expanded={open}
+      >
+        <span>{compact ? "App look" : "Pick your look"}: {currentChoice?.label || value}</span>
+        <span>{open ? "▲" : "▼"}</span>
+      </button>
+      {open ? (<>
       <div className="theme-picker-steps" aria-hidden="true">
         {WORKFLOW_STEPS.map((step) => (
           <i key={step.key} style={{ background: step.pulse }} title={step.label} />
@@ -107,6 +131,7 @@ export function ThemePicker({
           );
         })}
       </div>
+      </>) : null}
     </div>
   );
 }
