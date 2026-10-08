@@ -40,6 +40,9 @@ import { ThemePicker } from "@/components/command/ThemePicker";
 import { PaymentPrefsForm } from "@/components/command/PaymentPrefs";
 import { DeckPane } from "@/components/command/DeckPane";
 import { sortJobDeck } from "@/components/command/JobCard";
+import { HomeScreen } from "@/components/command/HomeScreen";
+import { AppLibrary } from "@/components/command/AppLibrary";
+import { getHomeApp, loadHomeLayout, saveHomeLayout, type HomeLayoutItem } from "@/lib/home-apps";
 import { useSwipeNav } from "@/hooks/use-swipe-nav";
 import { useWorkspaceOverlay } from "@/hooks/use-workspace-overlay";
 import { useAutofocusFirstInput } from "@/hooks/use-autofocus";
@@ -182,6 +185,10 @@ export function EmployeeWorkspace({
   const [guideCaught, setGuideCaught] = useState(false);
   const guideLanding = useRef<(() => void) | null>(null);
   const [deckJobId, setDeckJobId] = useState<string | null>(null);
+  /** App Home Screen (Eric 2026-10-08): overlay state + layout */
+  const [homeOpen, setHomeOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [homeLayout, setHomeLayout] = useState<HomeLayoutItem[]>(() => loadHomeLayout());
   const refreshedId = useRef<string | null>(null);
   const openedSignupStage = useRef(false);
   const field = session?.role === "CREW";
@@ -882,6 +889,101 @@ export function EmployeeWorkspace({
         onCommand={() => runGuide()}
         guideActive={guideSteps.length > 0}
       />
+      {/* App Home Screen launcher (Eric 2026-10-08) — floating button, doesn't touch dock */}
+      <button
+        type="button"
+        aria-label="Open home screen"
+        onClick={() => setHomeOpen(true)}
+        style={{
+          position: "fixed",
+          bottom: 84,
+          right: 16,
+          zIndex: 55,
+          width: 52,
+          height: 52,
+          borderRadius: "50%",
+          background: "#1a1a1a",
+          border: "2px solid #a3e635",
+          color: "#a3e635",
+          fontSize: 24,
+          cursor: "pointer",
+          boxShadow: "0 0 14px rgba(163,230,53,0.4)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        🏠
+      </button>
+      {/* App Home Screen overlay */}
+      {homeOpen && (
+        <HomeScreen
+          layout={homeLayout}
+          employees={employees.slice(0, 8).map((e) => ({
+            id: e.id,
+            name: `${e.firstName} ${e.lastName}`.trim() || "Crew",
+            initial: (e.firstName?.[0] || "?").toUpperCase(),
+            onJob: true,
+            location: "",
+          }))}
+          jobShortcuts={jobs.slice(0, 5).map((j) => ({
+            id: j.id,
+            customerName: customers.find((c) => c.id === j.customerId)?.name || "Customer",
+            jobName: j.title || "Job",
+            when: "Tap to open",
+          }))}
+          onOpenApp={(appId) => {
+            const app = getHomeApp(appId);
+            setHomeOpen(false);
+            if (!app) return;
+            if (app.open.action === "ai") {
+              // AI mic — handled by OneMic slot; just close home for now
+              return;
+            }
+            if (app.open.action === "camera" || app.open.action === "gps") {
+              // Camera/GPS actions — close home; native handlers can hook here
+              return;
+            }
+            if (app.open.tab) {
+              setTab(app.open.tab as AppTab);
+              writeWorkspaceUrl({ tab: app.open.tab, jobId: null });
+            }
+          }}
+          onOpenJob={(jobId) => {
+            setHomeOpen(false);
+            setFolderJobId(jobId);
+            setTab("command");
+            writeWorkspaceUrl({ tab: "command", jobId });
+          }}
+          onOpenEmployee={(empId) => {
+            setHomeOpen(false);
+            // Employee detail — route via crew tab for now
+            setTab("crew");
+            writeWorkspaceUrl({ tab: "crew", jobId: null });
+          }}
+          onOpenLibrary={() => setLibraryOpen(true)}
+          onRemoveItem={(index) => {
+            const next = homeLayout.filter((_, i) => i !== index);
+            setHomeLayout(next);
+            saveHomeLayout(next);
+          }}
+          onClose={() => setHomeOpen(false)}
+        />
+      )}
+      {/* App Library sheet */}
+      {libraryOpen && (
+        <AppLibrary
+          role={session?.role === "CREW" ? "CREW" : "ADMIN"}
+          installedIds={homeLayout.filter((i) => i.kind === "app").map((i) => i.refId)}
+          onAdd={(item) => {
+            const next = [...homeLayout, item];
+            setHomeLayout(next);
+            saveHomeLayout(next);
+            setLibraryOpen(false);
+          }}
+          onClose={() => setLibraryOpen(false)}
+        />
+      )}
     </AppShell>
   );
 }
