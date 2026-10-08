@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type CSSProperties, type ReactNode } from "react";
 import { toast } from "sonner";
 import { upsertDayHours } from "@/app/actions";
 import { CrewHoursList } from "@/components/command/CrewHoursList";
@@ -286,6 +286,25 @@ export function TimesheetBoard({
   const [pending, startTransition] = useTransition();
   const [hourPatches, setHourPatches] = useState<Record<string, number>>({});
   const month = monthKey(selected);
+  // Schedule redesign (Eric 2026-10-07): inline styles only, no CSS classes.
+  const isLightSkin =
+    typeof document !== "undefined" &&
+    ["light", "color"].includes(document.querySelector(".app-shell")?.getAttribute("data-shell") || "");
+  const calAccent = isLightSkin ? "#2ee600" : "#b2ff00";
+  const calBtn: CSSProperties = {
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    color: calAccent,
+  };
+  const calArrow: CSSProperties = { ...calBtn, fontSize: 26, padding: "8px 14px", flexShrink: 0 };
+  const calExpander: CSSProperties = {
+    ...calBtn,
+    fontSize: 13,
+    fontWeight: "bold",
+    padding: "10px 16px",
+    color: "var(--wb-ink, #b2ff00)",
+  };
   const roster = useMemo(() => (crew.length ? crew : [employee]), [crew, employee]);
 
   useEffect(() => {
@@ -476,6 +495,15 @@ export function TimesheetBoard({
       heldRef.current = false;
       return;
     }
+    if (spanDays.length > 1) {
+      // Multi-pick mode (Eric 2026-10-07): the tapped day becomes the big day,
+      // previously picked days stay as small boxes.
+      lastPickedDay = iso;
+      setSelected(iso);
+      addingRef.current = true;
+      setSpanDays((current) => (current.includes(iso) ? current : [...current, iso].sort()));
+      return;
+    }
     focusDay(iso);
   }
 
@@ -617,7 +645,7 @@ export function TimesheetBoard({
     // Folding the month back up leaves the page scrolled past the week strip; bring the calendar back.
     if (next === "week") {
       window.requestAnimationFrame(() =>
-        document.querySelector(".sched-desk .sched-cal")?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+        document.querySelector("[data-sched-cal]")?.scrollIntoView({ block: "nearest", behavior: "smooth" })
       );
     }
   }
@@ -635,13 +663,13 @@ export function TimesheetBoard({
   const monthSwipe = useSwipeNav(
     () => stepMonth(-1),
     () => stepMonth(1),
-    { keys: false, threshold: 22, through: ".sched-day", enabled: view === "month" }
+    { keys: false, threshold: 22, through: "[data-day]", enabled: view === "month" }
   );
   // The week strip swipes too (left/right = previous/next week), same as the month grid.
   const weekSwipe = useSwipeNav(
     () => stepWeek(-1),
     () => stepWeek(1),
-    { keys: false, threshold: 22, through: ".sched-day", enabled: view === "week" }
+    { keys: false, threshold: 22, through: "[data-day]", enabled: view === "week" }
   );
 
   function hearHours(text: string) {
@@ -766,11 +794,14 @@ export function TimesheetBoard({
   }
 
   // ---------- Pieces ----------
+  // Day cell: inline styles only (Eric 2026-10-07 redesign).
+  // Picked/multi days stay green, today gets a red outline, last tapped day is solid green.
   function dayTile(iso: string, variant: "week" | "month") {
     const marks = dayMarks(employee.timeEntries, iso, kindOf);
     const inMonth = variant === "week" || iso.startsWith(month);
-    const picked = spanDays.includes(iso) || iso === selected;
-    const inPeriod = iso >= periodStart && iso <= periodEnd;
+    const isSelected = iso === selected;
+    const isPicked = spanDays.includes(iso) && !isSelected;
+    const isToday = iso === today;
     const said = [
       formatDay(iso, "EEE MMM d"),
       marks.job ? "job" : "",
@@ -779,30 +810,86 @@ export function TimesheetBoard({
     ]
       .filter(Boolean)
       .join(", ");
+    const borderColor = isSelected ? (isToday ? "#ff0000" : calAccent) : isToday ? "#ff0000" : isPicked ? calAccent : "transparent";
+    const background = isSelected ? calAccent : isPicked ? (isLightSkin ? "#e9f7d8" : "#16290a") : "transparent";
+    const color = isSelected ? "#0a0a0a" : !inMonth ? "#5a5a5a" : isPicked ? calAccent : "var(--wb-ink, #f5f5f5)";
     return (
       <button
         key={iso}
         type="button"
         data-day={iso}
         aria-label={said}
-        aria-pressed={picked}
-        className={`sched-day${variant === "week" ? " sched-wd" : ""}${!inMonth ? " out" : ""}${
-          iso === today ? " today" : ""
-        }${picked ? " selected" : ""}${inPeriod ? " in-period" : ""}`}
+        aria-pressed={isSelected || isPicked}
         onPointerDown={(event) => pressDay(iso, event)}
         onPointerUp={releaseDay}
         onPointerCancel={releaseDay}
         onContextMenu={(event) => event.preventDefault()}
         onClick={() => pickDay(iso)}
+        style={{
+          border: `2px solid ${borderColor}`,
+          background,
+          color,
+          borderRadius: 10,
+          padding: variant === "week" ? "8px 2px" : "10px 2px",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
+          minWidth: 0,
+          opacity: !inMonth && variant === "month" ? 0.45 : 1,
+        }}
       >
-        {variant === "week" ? <small className="sched-dow">{formatDay(iso, "EEE")}</small> : null}
-        <b>{formatDay(iso, "d")}</b>
-        <span className="sched-marks" aria-hidden="true">
-          {marks.job ? <i className="sched-bar job" /> : null}
-          {marks.estimate ? <i className="sched-bar est" /> : null}
-          {marks.shift ? <i className="sched-bar shift" /> : null}
+        {variant === "week" ? <small style={{ fontSize: 11, color: "#8a8a8a" }}>{formatDay(iso, "EEE")}</small> : null}
+        <b style={{ fontSize: variant === "week" ? 18 : 16 }}>{formatDay(iso, "d")}</b>
+        <span aria-hidden="true" style={{ display: "flex", gap: 2, width: "100%", padding: "0 8px" }}>
+          {marks.job ? <i style={{ display: "block", flex: 1, height: 4, borderRadius: 2, background: "var(--sched-job, #4ade80)" }} /> : null}
+          {marks.estimate ? <i style={{ display: "block", flex: 1, height: 4, borderRadius: 2, background: "var(--sched-est, #f97316)" }} /> : null}
+          {marks.shift ? <i style={{ display: "block", flex: 1, height: 4, borderRadius: 2, background: "var(--sched-mute, #71717a)" }} /> : null}
         </span>
       </button>
+    );
+  }
+
+  // Big day cluster: the big number is always the LAST tapped day; other picked
+  // days flank it as small boxes that shrink as more are picked (Eric 2026-10-07).
+  function renderDayCluster() {
+    const otherPicked = spanDays.filter((d) => d !== selected);
+    const n = otherPicked.length;
+    const boxSize = n <= 1 ? 56 : n === 2 ? 48 : n === 3 ? 42 : n === 4 ? 36 : n === 5 ? 32 : 28;
+    const half = Math.ceil(n / 2);
+    const box = (iso: string) => (
+      <button
+        key={iso}
+        type="button"
+        onClick={() => pickDay(iso)}
+        aria-label={`Show ${formatDay(iso, "EEE MMM d")}`}
+        style={{
+          width: boxSize,
+          height: boxSize,
+          borderRadius: 10,
+          background: isLightSkin ? "#e9f7d8" : "#16290a",
+          border: `2px solid ${calAccent}`,
+          color: calAccent,
+          fontWeight: 900,
+          fontSize: Math.max(12, Math.round(boxSize * 0.42)),
+          flexShrink: 0,
+          cursor: "pointer",
+        }}
+      >
+        {formatDay(iso, "d")}
+      </button>
+    );
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 116, padding: "8px 0" }}>
+        {otherPicked.slice(0, half).map(box)}
+        <div style={{ textAlign: "center", minWidth: 104 }}>
+          <div style={{ fontSize: 76, fontWeight: 900, lineHeight: 1 }}>{formatDay(selected, "d")}</div>
+          <div style={{ fontSize: 14, color: calAccent, marginTop: 4 }}>{formatDay(selected, "EEEE")}</div>
+        </div>
+        {otherPicked.slice(half).map(box)}
+      </div>
     );
   }
 
@@ -963,101 +1050,131 @@ export function TimesheetBoard({
       </div>
       {children}
 
-      <div className="sched-dateline">
-        <b>{dateLine(selected)}</b>
-        {selected === today ? (
-          <span className="sched-today">Today</span>
-        ) : (
-          <button type="button" className="sched-today jump" onClick={() => focusDay(today)}>
+      {/* Big day cluster: big number is the LAST tapped day; other picked days flank it (Eric 2026-10-07) */}
+      {renderDayCluster()}
+      {selected !== today ? (
+        <div style={{ textAlign: "center", margin: "2px 0 8px" }}>
+          <button
+            type="button"
+            onClick={() => focusDay(today)}
+            style={{
+              fontSize: 12,
+              fontWeight: "bold",
+              background: calAccent,
+              color: "#0a0a0a",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 12px",
+              cursor: "pointer",
+            }}
+          >
             Today ↺
           </button>
-        )}
-      </div>
+        </div>
+      ) : null}
       {holdHint.showing ? (
-        <p className="sched-hold-hint" role="status" aria-live="polite" data-hold-hint="1">
+        <p role="status" aria-live="polite" data-hold-hint="1" style={{ textAlign: "center", fontSize: 12, color: "#8a8a8a", margin: "4px 0" }}>
           Press and hold to select multiple days
         </p>
       ) : null}
       {swipeFlash.node}
       {spanDays.length > 1 ? (
-        <p className="sched-span">
-          {spanDays.length} days picked
-          <button type="button" onClick={() => focusDay(selected)}>
+        <p style={{ textAlign: "center", fontSize: 13, color: "#999", margin: "4px 0" }}>
+          {spanDays.length} days picked{" "}
+          <button
+            type="button"
+            onClick={() => focusDay(selected)}
+            style={{
+              fontSize: 12,
+              fontWeight: "bold",
+              background: "none",
+              border: `1px solid ${calAccent}`,
+              color: calAccent,
+              borderRadius: 6,
+              padding: "4px 10px",
+              cursor: "pointer",
+            }}
+          >
             Clear
           </button>
         </p>
       ) : null}
 
       {view === "week" ? (
-        <div className="sched-cal sched-week">
-          <div className="sched-week-head">
-            <button type="button" className="sched-arrow" onClick={() => stepWeek(-1)} aria-label="Previous week">
+        <div data-sched-cal="1" style={{ margin: "8px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button type="button" onClick={() => stepWeek(-1)} aria-label="Previous week" style={calArrow}>
               ‹
             </button>
-            <div className="sched-week-title">
-              <small>Week · swipe or tap arrows</small>
-              <b>{weekLabel(selected)}</b>
+            <div data-swipe-local {...weekSwipe.bind} style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+              {weekDays(selected).map((iso) => dayTile(iso, "week"))}
             </div>
-            <button type="button" className="sched-arrow" onClick={() => stepWeek(1)} aria-label="Next week">
+            <button type="button" onClick={() => stepWeek(1)} aria-label="Next week" style={calArrow}>
               ›
             </button>
           </div>
-          <div className="sched-strip" data-swipe-local {...weekSwipe.bind}>
-            {weekDays(selected).map((iso) => dayTile(iso, "week"))}
+          <div style={{ textAlign: "center", marginTop: 6 }}>
+            <button type="button" onClick={toggleView} aria-expanded={false} style={calExpander}>
+              ▦ Show month ▾
+            </button>
           </div>
-          <button type="button" className="sched-expand" onClick={toggleView} aria-expanded={false}>
-            <i aria-hidden="true">▦</i> Show month <i aria-hidden="true">▾</i>
-          </button>
         </div>
       ) : (
-        <div className="sched-cal sched-month">
-          <div className="sched-nav">
-            <div className="sched-navgrp" role="group" aria-label="Month">
-              <span className="sched-navlbl">Month</span>
-              <button type="button" onClick={() => stepMonth(-1)} aria-label="Previous month">
-                «
-              </button>
-              <b>{formatDay(`${month}-01`, today.slice(0, 4) === month.slice(0, 4) ? "MMM" : "MMM yy")}</b>
-              <button type="button" onClick={() => stepMonth(1)} aria-label="Next month">
-                »
-              </button>
-            </div>
-            <div className="sched-navgrp" role="group" aria-label="Day">
-              <span className="sched-navlbl">Day</span>
-              <button type="button" onClick={() => goDays(-1)} aria-label="Previous day">
-                ‹
-              </button>
-              <b>{formatDay(selected, "EEE d")}</b>
-              <button type="button" onClick={() => goDays(1)} aria-label="Next day">
-                ›
-              </button>
-            </div>
-          </div>
-          <div className="month-swipe" data-swipe-local data-dragging={monthSwipe.dragging ? "1" : "0"} {...monthSwipe.bind}>
+        <div data-sched-cal="1" style={{ margin: "8px 0" }}>
+          <div data-swipe-local data-dragging={monthSwipe.dragging ? "1" : "0"} {...monthSwipe.bind}>
             <SwipeBlink storageKey="jc-month-swipe" />
             <div
-              className="sched-grid"
-              style={monthSwipe.dragging ? { transform: `translate3d(${Math.max(-40, Math.min(40, monthSwipe.drag))}px,0,0)` } : undefined}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gap: 4,
+                ...(monthSwipe.dragging
+                  ? { transform: `translate3d(${Math.max(-40, Math.min(40, monthSwipe.drag))}px,0,0)` }
+                  : {}),
+              }}
             >
               {["S", "M", "T", "W", "T", "F", "S"].map((label, index) => (
-                <span key={`${label}-${index}`} className="sched-gdow">
+                <span key={`${label}-${index}`} style={{ textAlign: "center", fontSize: 11, color: "#777", padding: "4px 0" }}>
                   {label}
                 </span>
               ))}
               {monthDays(month).map((iso) => dayTile(iso, "month"))}
             </div>
           </div>
-          <div className="sched-legend">
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", margin: "10px 0 4px", fontSize: 13, color: "#999" }}>
             <span>
-              <i className="sched-bar job" /> Job
+              <i style={{ display: "inline-block", width: 14, height: 5, borderRadius: 2, background: "var(--sched-job, #4ade80)", marginRight: 6, verticalAlign: "middle" }} />
+              Job
             </span>
             <span>
-              <i className="sched-bar est" /> Estimate
+              <i style={{ display: "inline-block", width: 14, height: 5, borderRadius: 2, background: "var(--sched-est, #f97316)", marginRight: 6, verticalAlign: "middle" }} />
+              Estimate
             </span>
           </div>
-          <button type="button" className="sched-expand" onClick={toggleView} aria-expanded>
-            <i aria-hidden="true">▤</i> Show week <i aria-hidden="true">▴</i>
-          </button>
+          {/* Month arrows at the very bottom of the calendar (Eric 2026-10-07) */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 28,
+              padding: "10px 0 4px",
+              borderTop: "1px solid var(--wb-edge, #2a2a2a)",
+            }}
+          >
+            <button type="button" onClick={() => stepMonth(-1)} aria-label="Previous month" style={calArrow}>
+              ‹
+            </button>
+            <b style={{ fontSize: 16, letterSpacing: 3 }}>{formatDay(`${month}-01`, "MMM yy").toUpperCase()}</b>
+            <button type="button" onClick={() => stepMonth(1)} aria-label="Next month" style={calArrow}>
+              ›
+            </button>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <button type="button" onClick={toggleView} aria-expanded style={calExpander}>
+              ▤ Show week ▴
+            </button>
+          </div>
         </div>
       )}
 

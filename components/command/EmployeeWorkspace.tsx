@@ -1282,32 +1282,88 @@ function ScheduleWho({
   const swipe = useSwipeNav(onPrev, onNext, { enabled: !solo, threshold: 22 });
   const slide = swipe.dragging ? Math.max(-40, Math.min(40, swipe.drag)) : 0;
   if (hint) {
+    // Employee header redesign (Eric 2026-10-07): inline styles only. Larger avatar
+    // on the LEFT (72px), name + role on the RIGHT, arrows on EACH side to flip people.
     const flip = !solo && count > 1;
+    const whoArrow: React.CSSProperties = {
+      fontSize: 26,
+      color: "var(--wb-ink, #b2ff00)",
+      background: "none",
+      border: "none",
+      padding: "12px 6px",
+      cursor: "pointer",
+      flexShrink: 0,
+    };
     return (
-      <div className="sched-who" data-dragging={swipe.dragging ? "1" : "0"} data-solo={flip ? undefined : "1"} {...swipe.bind}>
+      <div
+        data-dragging={swipe.dragging ? "1" : "0"}
+        data-solo={flip ? undefined : "1"}
+        {...swipe.bind}
+        style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0" }}
+      >
         {flip ? (
-          <button type="button" className="sched-who-arrow" onClick={onPrev} aria-label="Previous person" data-no-swipe>
+          <button type="button" onClick={onPrev} aria-label="Previous person" data-no-swipe style={whoArrow}>
             ◀
           </button>
         ) : null}
-        <div className="sched-who-mid who-glide" style={swipe.dragging ? { transform: `translate3d(${slide}px,0,0)` } : undefined}>
-          <img src={employee.photoUrl ?? "/avatars/generic.svg"} alt="" />
-          <div className="sched-who-text">
-            <b className="sched-who-name">
+        <div
+          style={{
+            ...(swipe.dragging ? { transform: `translate3d(${slide}px,0,0)` } : {}),
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          <img
+            src={employee.photoUrl ?? "/avatars/generic.svg"}
+            alt=""
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: 16,
+              objectFit: "cover",
+              border: "2px solid var(--wb-ink, #b2ff00)",
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ minWidth: 0 }}>
+            <b
+              style={{
+                fontSize: 22,
+                fontWeight: 900,
+                display: "block",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               {employee.firstName} {employee.lastName}
             </b>
-            <span className="sched-who-role">{crewSpot(employee.jobTitle || "", index, count)}</span>
+            <span style={{ fontSize: 13, color: "var(--wb-ink, #b2ff00)", display: "block", marginTop: 2 }}>
+              {crewSpot(employee.jobTitle || "", index, count)}
+            </span>
             {flip && count <= 12 ? (
-              <span className="sched-who-dots" aria-hidden="true">
+              <span aria-hidden="true" style={{ display: "flex", gap: 4, marginTop: 6 }}>
                 {Array.from({ length: count }, (_, dot) => (
-                  <i key={dot} className={dot === index ? "on" : undefined} />
+                  <i
+                    key={dot}
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: 3,
+                      background: dot === index ? "var(--wb-ink, #b2ff00)" : "#444",
+                      display: "block",
+                    }}
+                  />
                 ))}
               </span>
             ) : null}
           </div>
         </div>
         {flip ? (
-          <button type="button" className="sched-who-arrow" onClick={onNext} aria-label="Next person" data-no-swipe>
+          <button type="button" onClick={onNext} aria-label="Next person" data-no-swipe style={whoArrow}>
             ▶
           </button>
         ) : null}
