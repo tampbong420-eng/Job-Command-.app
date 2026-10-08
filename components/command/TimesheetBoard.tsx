@@ -491,16 +491,16 @@ export function TimesheetBoard({
   }
 
   function pickDay(iso: string) {
-    // Always select the tapped day (Eric 2026-10-07 fix: hold detection was blocking taps)
+    // Tap toggles day in picked set, tapped becomes the big/selected day (Eric 2026-10-07)
     lastPickedDay = iso;
     setSelected(iso);
-    if (spanDays.length > 1) {
-      // Multi-pick mode: add to span, tapped becomes big day
-      addingRef.current = true;
-      setSpanDays((current) => (current.includes(iso) ? current : [...current, iso].sort()));
-    } else {
-      setSpanDays([iso]);
-    }
+    setSpanDays((current) => {
+      if (current.includes(iso)) {
+        // Already picked: keep it (don't remove on tap, use Clear to reset)
+        return current;
+      }
+      return [...current, iso].sort();
+    });
     addingRef.current = false;
   }
 
