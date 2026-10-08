@@ -1187,7 +1187,7 @@ function Dock({
   // Press feedback (Eric 2026-10-07): border flashes highlight color for 1 second when pushed.
   const [pressed, setPressed] = useState<string | null>(null);
   const pressStyle = (key: string): CSSProperties | undefined =>
-    pressed === key ? { filter: "brightness(1.8)", boxShadow: "inset 0 0 20px rgba(255,255,255,0.3)" } : undefined;
+    pressed === key ? { background: "#f97316", color: "#ffffff" } : undefined;
   const pressHandlers = (key: string) => ({
     onTouchStart: () => {
       setPressed(key);
