@@ -1184,25 +1184,40 @@ function Dock({
     boxShadow: "0 0 12px rgba(249,115,22,0.6)",
     animation: "dockPulse 1.5s ease-in-out infinite",
   };
+  // Press feedback (Eric 2026-10-07): border flashes highlight color when pushed.
+  const [pressed, setPressed] = useState<string | null>(null);
+  const pressStyle = (key: string): CSSProperties | undefined =>
+    pressed === key ? { border: `2px solid ${selectedBorder}`, boxShadow: `0 0 16px ${selectedGlow}` } : undefined;
+  const pressHandlers = (key: string) => ({
+    onTouchStart: () => setPressed(key),
+    onTouchEnd: () => setPressed(null),
+    onMouseDown: () => setPressed(key),
+    onMouseUp: () => setPressed(null),
+    onMouseLeave: () => setPressed(null),
+  });
   return (
     <>
       <style>{`@keyframes dockPulse { 0%,100% { box-shadow: 0 0 12px rgba(249,115,22,0.6); } 50% { box-shadow: 0 0 20px rgba(249,115,22,0.9); } }`}</style>
       <nav aria-label="Desk" style={navStyle}>
         <button type="button" onClick={() => onTab("crew")} aria-label="Roster"
-          style={tab === "crew" ? btnSelected : btnBase}>
+          {...pressHandlers("crew")}
+          style={{ ...(tab === "crew" ? btnSelected : btnBase), ...pressStyle("crew") }}>
           <Clock className="size-5" />
         </button>
         <button type="button" onClick={() => onTab("company")} aria-label="Office"
-          style={tab === "company" ? btnSelected : btnBase}>
+          {...pressHandlers("company")}
+          style={{ ...(tab === "company" ? btnSelected : btnBase), ...pressStyle("company") }}>
           <Settings className="size-5" />
         </button>
         <button type="button" onClick={() => onTab("command")}
-          style={tab === "command" ? btnSelected : btnBase}>
+          {...pressHandlers("command")}
+          style={{ ...(tab === "command" ? btnSelected : btnBase), ...pressStyle("command") }}>
           <Crown className="size-5" />
           Jobs
         </button>
         <button type="button" onClick={onCommand} aria-label="Command"
-          style={guideActive ? btnAction : btnBase}>
+          {...pressHandlers("guide")}
+          style={{ ...(guideActive ? btnAction : btnBase), ...pressStyle("guide") }}>
           <Compass className="size-5" />
           Command
         </button>
