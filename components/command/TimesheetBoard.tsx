@@ -491,20 +491,17 @@ export function TimesheetBoard({
   }
 
   function pickDay(iso: string) {
-    if (heldRef.current) {
-      heldRef.current = false;
-      return;
-    }
+    // Always select the tapped day (Eric 2026-10-07 fix: hold detection was blocking taps)
+    lastPickedDay = iso;
+    setSelected(iso);
     if (spanDays.length > 1) {
-      // Multi-pick mode (Eric 2026-10-07): the tapped day becomes the big day,
-      // previously picked days stay as small boxes.
-      lastPickedDay = iso;
-      setSelected(iso);
+      // Multi-pick mode: add to span, tapped becomes big day
       addingRef.current = true;
       setSpanDays((current) => (current.includes(iso) ? current : [...current, iso].sort()));
-      return;
+    } else {
+      setSpanDays([iso]);
     }
-    focusDay(iso);
+    addingRef.current = false;
   }
 
   function dropStop(entry: TimeEntryDTO) {
