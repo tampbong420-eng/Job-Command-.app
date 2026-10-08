@@ -469,21 +469,11 @@ export function TimesheetBoard({
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", finish);
     window.addEventListener("pointercancel", finish);
+    // Eric 2026-10-07: Hold-to-select DISABLED - use Single/Multiple toggle instead, tap only
     holdTimer.current = window.setTimeout(() => {
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
-      heldRef.current = true;
-      setHoldHint((current) => {
-        const next = nextHoldHint(current, "long-press");
-        return next.showing === current.showing ? current : { done: next.done, showing: next.showing };
-      });
-      const adding = addingRef.current;
-      addingRef.current = true;
-      setSelected(iso);
-      setSpanDays((current) => {
-        const base = adding ? current : [];
-        return base.includes(iso) ? base : [...base, iso].sort();
-      });
+      clearHold();
     }, 450);
   }
 
