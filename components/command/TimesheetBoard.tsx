@@ -261,6 +261,7 @@ export function TimesheetBoard({
 }) {
   const today = todayString(now);
   const [selected, setSelected] = useState(() => lastPickedDay ?? today);
+  const [multiMode, setMultiMode] = useState(false); // Eric 2026-10-07: Single vs Multiple toggle, no hold needed
   const [spanDays, setSpanDays] = useState<string[]>(() => [lastPickedDay ?? today]);
   const [view, setView] = useState<ScheduleView>("week");
   const [filter, setFilter] = useState<ScheduleFilter>("ALL");
@@ -491,16 +492,14 @@ export function TimesheetBoard({
   }
 
   function pickDay(iso: string) {
-    // Tap toggles day in picked set, tapped becomes the big/selected day (Eric 2026-10-07)
+    // Eric 2026-10-07: Single mode replaces, Multiple mode adds (no hold needed)
     lastPickedDay = iso;
     setSelected(iso);
-    setSpanDays((current) => {
-      if (current.includes(iso)) {
-        // Already picked: keep it (don't remove on tap, use Clear to reset)
-        return current;
-      }
-      return [...current, iso].sort();
-    });
+    if (multiMode) {
+      setSpanDays((current) => (current.includes(iso) ? current : [...current, iso].sort()));
+    } else {
+      setSpanDays([iso]);
+    }
     addingRef.current = false;
   }
 
@@ -1069,12 +1068,38 @@ export function TimesheetBoard({
           </button>
         </div>
       ) : null}
-      {holdHint.showing ? (
-        <p role="status" aria-live="polite" data-hold-hint="1" style={{ textAlign: "center", fontSize: 12, color: "#8a8a8a", margin: "4px 0" }}>
-          Press and hold to select multiple days
+      {multiMode ? (
+        <p style={{ textAlign: "center", fontSize: 12, color: "#8a8a8a", margin: "4px 0" }}>
+          Tap days to add them
         </p>
       ) : null}
       {swipeFlash.node}
+      <div style={{ display: "flex", justifyContent: "center", gap: 8, margin: "8px 0" }}>
+        <button
+          type="button"
+          onClick={() => { setMultiMode(false); setSpanDays([selected]); }}
+          style={{
+            padding: "8px 16px", borderRadius: 8, fontWeight: "bold", fontSize: 14,
+            background: !multiMode ? calAccent : "transparent",
+            color: !multiMode ? "#0a0a0a" : calAccent,
+            border: `2px solid ${calAccent}`, cursor: "pointer",
+          }}
+        >
+          Single day
+        </button>
+        <button
+          type="button"
+          onClick={() => setMultiMode(true)}
+          style={{
+            padding: "8px 16px", borderRadius: 8, fontWeight: "bold", fontSize: 14,
+            background: multiMode ? calAccent : "transparent",
+            color: multiMode ? "#0a0a0a" : calAccent,
+            border: `2px solid ${calAccent}`, cursor: "pointer",
+          }}
+        >
+          Multiple days
+        </button>
+      </div>
       {spanDays.length > 1 ? (
         <p style={{ textAlign: "center", fontSize: 13, color: "#999", margin: "4px 0" }}>
           {spanDays.length} days picked{" "}
