@@ -2631,7 +2631,7 @@
   z-index: 2;
   scroll-margin: 96px 0 120px;
   /* Fallback amber; JS sets this to the button's own background color (Eric, 2026-10-03). */
-  --guide-pulse: #facc15;
+  --guide-pulse: #f97316; /* Orange (Eric 2026-10-07 item 9) */
   /* Hard outline so the target is impossible to miss (Eric, 2026-10-03). */
   outline: 3px solid var(--guide-pulse) !important;
   outline-offset: 2px;
