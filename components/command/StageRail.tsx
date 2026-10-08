@@ -41,8 +41,18 @@ function hexA(hex: string, alpha: number): string {
  * Archive's fill (#27272a) is near-invisible as a glow on dark skins,
  * so its neon uses slate instead. Every other stage uses its own fill.
  */
+/** Neon-bright versions of stage fills for the glow effect (Eric 2026-10-08: dark fills looked muddy) */
+const NEON_FILL: Record<number, string> = {
+  1: "#ff4444", // New Lead - bright red (was #dc2626 dark)
+  2: "#ff8833", // Estimate - bright orange
+  3: "#ffdd33", // Schedule - bright yellow
+  4: "#44ff88", // Active - bright green
+  5: "#22dd55", // Invoice - bright (was #166534 dark)
+  6: "#a1a1aa", // Archive - slate (was #27272a invisible)
+};
+
 function neonFor(stepId: number, fill: string): string {
-  return stepId === 6 ? "#a1a1aa" : fill;
+  return NEON_FILL[stepId] || fill;
 }
 
 export function StageRail({
@@ -94,11 +104,11 @@ export function StageRail({
 
           // Left dot: completed stages lit solid in the stage color with a glow;
           // partially-done stages half-lit; everything else dim.
-          const dotBackground = done ? neon : tone === "partial" ? hexA(step.fill, 0.6) : "#6b7280";
+          const dotBackground = done ? neon : tone === "partial" ? hexA(neon, 0.6) : "#6b7280";
           const dotShadow = done
             ? `0 0 6px ${neon}, 0 0 14px ${neon}`
             : tone === "partial"
-              ? `0 0 6px ${hexA(step.fill, 0.7)}`
+              ? `0 0 6px ${hexA(neon, 0.7)}`
               : "none";
 
           const barStyle: CSSProperties = {
@@ -120,12 +130,12 @@ export function StageRail({
             border: selected
               ? `2px solid ${neon}`
               : done
-                ? `1px solid ${hexA(step.fill, 0.55)}`
+                ? `1px solid ${hexA(neon, 0.55)}`
                 : "1px solid var(--wb-edge, #333333)",
             background: selected
-              ? hexA(step.id === 6 ? "#a1a1aa" : step.fill, 0.16)
+              ? hexA(neon, 0.16)
               : done
-                ? hexA(step.fill, 0.22)
+                ? hexA(neon, 0.22)
                 : "var(--wb-fill, #ffffff)",
             color: "var(--wb-ink, #f5f5f5)",
             ...(selected
