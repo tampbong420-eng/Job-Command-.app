@@ -929,7 +929,7 @@ export function EmployeeWorkspace({
           jobShortcuts={jobs.slice(0, 5).map((j) => ({
             id: j.id,
             customerName: customers.find((c) => c.id === j.customerId)?.name || "Customer",
-            jobName: j.title || "Job",
+            jobName: j.name || "Job",
             when: "Tap to open",
           }))}
           onOpenApp={(appId) => {
